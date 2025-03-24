@@ -1,15 +1,17 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import { config } from 'dotenv';
+
+// Use require for modules with type issues
+const helmet = require('helmet');
+const dotenv = require('dotenv');
 
 // Load environment variables
-config();
+dotenv.config();
 
-// Import routes (to be created)
+// Import routes
 import apiRouter from './routes/api';
 
 const app = express();
