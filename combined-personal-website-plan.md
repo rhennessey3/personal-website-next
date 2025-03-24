@@ -1,4 +1,4 @@
-# Revised Next.js Personal Website Plan with Express Backend
+# Combined Personal Website Plan
 
 ## 1. Project Overview
 
@@ -8,11 +8,35 @@ This personal website will showcase your 10+ years of experience in product mana
 2. **Thinking Page**: Masonry-style layout featuring detailed case studies and blog posts
 3. **About Page**: Resume-style presentation with work experience, education, skills, and contact form
 
-The project will now use a two-part architecture:
+The project uses a monorepo structure with:
 - **Frontend**: Next.js with shadcn/ui and Aceternity UI for a responsive, animated interface
 - **Backend**: Express.js server with Zod validation, connecting to Supabase as the database
+- **Shared Packages**: Common types, utilities, and validation schemas
 
-## 2. Revised Technical Architecture
+## 2. Monorepo Architecture
+
+```mermaid
+flowchart TD
+    A[Monorepo Root] --> B[apps/frontend]
+    A --> C[apps/backend]
+    A --> D[packages/shared]
+    A --> E[packages/config]
+    
+    B --> F[Next.js App]
+    C --> G[Express API]
+    D --> H[Types & Schemas]
+    D --> I[Utilities]
+    E --> J[ESLint Config]
+    E --> K[TypeScript Config]
+    
+    F <--> G
+    F --> H
+    G --> H
+    F --> I
+    G --> I
+```
+
+## 3. Technical Architecture
 
 ```mermaid
 flowchart TD
@@ -26,31 +50,71 @@ flowchart TD
     E --> H[Controllers]
     E --> I[Services]
     
-    F --> J[Zod Validation Schemas]
-    H --> K[Supabase Client]
+    J[Shared Package] --> K[Types]
+    J --> L[Validation Schemas]
+    J --> M[Utilities]
     
-    K --> L[Database]
-    K --> M[Authentication]
-    K --> N[Storage]
+    F --> L
+    H --> N[Supabase Client]
+    
+    N --> O[Database]
+    N --> P[Authentication]
+    N --> Q[Storage]
     
     A <--> E
+    A --> J
+    E --> J
     
-    L --> O[Case Studies]
-    L --> P[Blog Posts]
-    L --> Q[Resume Data]
+    O --> R[Case Studies]
+    O --> S[Blog Posts]
+    O --> T[Resume Data]
     
-    C --> R[Home]
-    C --> S[Thinking]
-    C --> T[About]
-    C --> U[Admin Dashboard]
+    C --> U[Home]
+    C --> V[Thinking]
+    C --> W[About]
+    C --> X[Admin Dashboard]
 ```
 
-## 3. Project Structure
-
-### Frontend (Next.js)
+## 4. Project Structure
 
 ```
-frontend/
+personal-website-next/
+├── package.json (root package.json)
+├── turbo.json (Turborepo configuration)
+├── apps/
+│   ├── frontend/ (Next.js app)
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── lib/
+│   │   ├── hooks/
+│   │   ├── public/
+│   │   └── package.json
+│   └── backend/ (Express.js app)
+│       ├── src/
+│       │   ├── routes/
+│       │   ├── controllers/
+│       │   ├── middleware/
+│       │   ├── services/
+│       │   └── server.ts
+│       └── package.json
+├── packages/
+│   ├── shared/ (Shared code)
+│   │   ├── src/
+│   │   │   ├── types/ (TypeScript types)
+│   │   │   ├── schemas/ (Zod schemas)
+│   │   │   └── utils/ (Shared utilities)
+│   │   └── package.json
+│   └── config/ (Shared configurations)
+│       ├── eslint/
+│       ├── tsconfig/
+│       └── package.json
+└── supabase/ (Database initialization)
+```
+
+## 5. Frontend Structure (Next.js)
+
+```
+apps/frontend/
 ├── app/
 │   ├── page.tsx (Home)
 │   ├── thinking/
@@ -58,7 +122,13 @@ frontend/
 │   ├── about/
 │   │   └── page.tsx
 │   └── admin/
-│       └── page.tsx
+│       ├── page.tsx (Dashboard)
+│       ├── login/
+│       │   └── page.tsx
+│       ├── case-studies/
+│       ├── blog-posts/
+│       ├── profile/
+│       └── contact/
 ├── components/
 │   ├── ui/
 │   │   ├── shadcn/ (shadcn components)
@@ -68,49 +138,46 @@ frontend/
 │   └── admin/ (Admin components)
 ├── lib/
 │   ├── api.ts (API client for Express backend)
-│   ├── utils.ts
-│   └── types.ts
+│   ├── types.ts (Type definitions)
+│   └── utils.ts (Utility functions)
 ├── hooks/
-│   └── (custom hooks)
+│   └── useApi.ts (Custom API hooks)
 └── public/
     └── (static assets)
 ```
 
-### Backend (Express.js)
+## 6. Backend Structure (Express.js)
 
 ```
-backend/
-├── server.js (Main Express setup)
-├── routes/
-│   ├── api.js (API router)
-│   ├── case-studies.js
-│   ├── blog-posts.js
-│   ├── profile.js
-│   └── admin.js
-├── controllers/
-│   ├── case-studies.js
-│   ├── blog-posts.js
-│   ├── profile.js
-│   └── admin.js
-├── middleware/
-│   ├── auth.js
-│   ├── error-handler.js
-│   └── validation.js
-├── services/
-│   ├── supabase.js (Supabase client)
-│   ├── case-studies.js
-│   ├── blog-posts.js
-│   └── profile.js
-└── schemas/
-    ├── case-studies.js (Zod schemas)
-    ├── blog-posts.js
-    ├── profile.js
-    └── admin.js
+apps/backend/
+├── src/
+│   ├── server.ts (Main Express setup)
+│   ├── routes/
+│   │   ├── api.ts (API router)
+│   │   ├── case-studies.ts
+│   │   ├── blog-posts.ts
+│   │   ├── profile.ts
+│   │   └── admin.ts
+│   ├── controllers/
+│   │   ├── case-studies.ts
+│   │   ├── blog-posts.ts
+│   │   ├── profile.ts
+│   │   └── admin.ts
+│   ├── middleware/
+│   │   ├── auth.ts
+│   │   ├── error-handler.ts
+│   │   └── validation.ts
+│   └── services/
+│       ├── supabase.ts (Supabase client)
+│       ├── case-studies.ts
+│       ├── blog-posts.ts
+│       └── profile.ts
+└── package.json
 ```
 
-## 4. Express API Structure
+## 7. Express API Structure
 
-The Express backend will provide a RESTful API with the following endpoints:
+The Express backend provides a RESTful API with the following endpoints:
 
 ### Public Endpoints
 
@@ -151,62 +218,9 @@ PUT    /api/admin/contact/:id      - Mark contact as read
 DELETE /api/admin/contact/:id      - Delete contact submission
 ```
 
-## 5. Zod Validation Schemas
+## 8. UI Component Strategy
 
-Zod will be used to validate all incoming requests to the API. Here are examples of key validation schemas:
-
-### Case Study Schema
-
-```typescript
-import { z } from 'zod';
-
-export const caseStudySchema = z.object({
-  title: z.string().min(3).max(100),
-  slug: z.string().min(3).max(100).regex(/^[a-z0-9-]+$/),
-  summary: z.string().min(10).max(500),
-  featured_image_url: z.string().url().optional(),
-  published: z.boolean().default(false),
-  published_date: z.string().datetime().optional(),
-});
-
-export const caseStudySectionSchema = z.object({
-  case_study_id: z.number(),
-  section_type: z.enum([
-    'challenge',
-    'approach',
-    'solution',
-    'results',
-    'learnings',
-    'future_directions'
-  ]),
-  section_order: z.number().int().min(0),
-  title: z.string().min(3).max(100),
-  content: z.string().min(10),
-});
-
-export const caseStudyMetricSchema = z.object({
-  case_study_id: z.number(),
-  section_type: z.enum(['business_impact', 'user_impact', 'technical_achievements']),
-  label: z.string().min(3).max(100),
-  value: z.string().min(1).max(50),
-});
-```
-
-### Contact Form Schema
-
-```typescript
-import { z } from 'zod';
-
-export const contactFormSchema = z.object({
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  message: z.string().min(10).max(2000),
-});
-```
-
-## 6. UI Component Strategy
-
-The UI component strategy remains the same, using:
+The UI component strategy uses:
 
 **shadcn/ui Components (Core Functionality)**
 - Navigation menus
@@ -226,9 +240,9 @@ The UI component strategy remains the same, using:
 - Animated counters for metrics
 - Spotlight and hover effects
 
-## 7. Supabase Database Schema
+## 9. Supabase Database Schema
 
-The database schema remains the same as in the original plan, with tables for:
+The database schema includes tables for:
 - profiles
 - work_experiences
 - education
@@ -242,91 +256,83 @@ The database schema remains the same as in the original plan, with tables for:
 - blog_post_tags
 - contact_submissions
 
-## 8. Authentication Flow
+## 10. Authentication Flow
 
-The authentication flow will now be handled through the Express backend:
+The authentication flow is handled through the Express backend:
 
 1. Admin login through Express API endpoint
 2. JWT token generation and storage in HTTP-only cookies
 3. Token verification middleware for protected routes
 4. Supabase RLS (Row Level Security) as an additional security layer
 
-## 9. Implementation Plan (Revised)
+## 11. Updated Implementation Plan
 
-### Phase 1: Project Setup (Week 1)
-- Initialize Next.js frontend project with TypeScript
-- Initialize Express.js backend project
-- Set up project structure for both frontend and backend
-- Install necessary dependencies for both projects
-- Configure ESLint, Prettier, and TypeScript for both projects
+### Phase 1: Project Setup (Completed)
+- Initialize monorepo structure
+- Set up shared configuration packages
+- Create frontend and backend workspaces
+- Configure scripts and dependencies
 
-### Phase 2: Backend Development (Week 1-2)
+### Phase 2: Backend Development (Completed)
 - Set up Express.js server with middleware
-- Create Zod validation schemas for all data models
-- Implement Supabase client service
-- Create API routes and controllers
+- Implement API routes and controllers
+- Create Supabase client service
 - Implement authentication and authorization
-- Set up error handling and logging
 
-### Phase 3: Database and API Integration (Week 2)
-- Set up Supabase project and initial schema
-- Create database tables and relationships
-- Implement API endpoints for all CRUD operations
-- Test API endpoints with Postman or similar tool
-- Create seed data for development
-
-### Phase 4: Frontend Development (Week 2-3)
-- Set up Next.js with Tailwind CSS
-- Install and configure shadcn/ui and Aceternity UI
-- Create API client to connect to Express backend
-- Build shared components and layouts
+### Phase 3: Frontend Foundation (In Progress)
+- Set up Next.js with Tailwind CSS and shadcn/ui
+- Create basic page layouts and navigation
 - Implement responsive design system
+- Set up API client for backend communication
 
-### Phase 5: Page Development (Week 3-4)
-- Develop Home page with responsive design
-- Build Thinking page with masonry layout and filtering
-- Create case study detail page template
-- Create About page with resume sections and animations
-- Implement contact form functionality
-
-### Phase 6: Admin Interface (Week 4)
+### Phase 4: Admin Dashboard (In Progress)
 - Create admin login page and authentication flow
 - Build admin dashboard layout
 - Implement content management interfaces
 - Create form validation and submission handling
 - Build image upload functionality
 
-### Phase 7: Testing and Refinement (Week 4-5)
+### Phase 5: Content Integration
+- Connect frontend with backend API
+- Implement data fetching and caching
+- Add loading states and error handling
+- Set up real-time updates where needed
+
+### Phase 6: Visual Enhancements
+- Implement Aceternity UI components
+- Add animations and transitions
+- Optimize for performance
+- Ensure accessibility compliance
+
+### Phase 7: Testing and Refinement
 - Implement unit and integration tests
 - Perform cross-browser and device testing
 - Optimize performance with Lighthouse
 - Address any accessibility issues
-- Refine animations and interactions
 
-### Phase 8: Deployment (Week 5)
-- Set up production environments for frontend and backend
+### Phase 8: Deployment
+- Set up production environments
 - Configure environment variables
 - Set up CI/CD pipeline
 - Deploy to production
 - Monitor for issues and performance
 
-## 10. Development Environment Setup
+## 12. Development Environment
 
-For local development, we'll use:
-
+For local development:
 1. **Frontend**: Next.js dev server on port 3000
-2. **Backend**: Express server on port 5000
+2. **Backend**: Express server on port 5001
 3. **Database**: Supabase project with connection strings in .env files
 
-## 11. Deployment Strategy
+## 13. Deployment Strategy
 
-The deployment strategy will involve:
-
+The deployment strategy involves:
 1. **Frontend**: Deploy to Vercel
 2. **Backend**: Deploy to a Node.js hosting service (Render, Railway, or similar)
 3. **Database**: Supabase cloud hosting
+4. **CI/CD**: GitHub Actions workflow to build, test, and deploy both apps
 
-## 12. Additional Considerations
+## 14. Additional Considerations
 
 1. **API Documentation**: Implement Swagger/OpenAPI documentation for the Express API
 2. **Rate Limiting**: Add rate limiting middleware to protect against abuse
