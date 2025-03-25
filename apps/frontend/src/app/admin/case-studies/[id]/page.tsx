@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Cookies from 'js-cookie';
 import { Plus, Trash, ArrowUp, ArrowDown, Upload, X } from 'lucide-react';
+import { getAdminCaseStudyById, createCaseStudy, updateCaseStudy, uploadImage as uploadImageApi } from '@/lib/api';
+import { CaseStudy } from '@/lib/types';
 
-// Define the CaseStudy type
+// Define the AdminCaseStudy type for the component
 interface AdminCaseStudy {
   id: string;
   title: string;
@@ -57,7 +59,7 @@ const metricTypeOptions = [
   { value: 'technical_achievements', label: 'Technical Achievements' }
 ];
 
-// Placeholder for API functions
+// Function to get a case study by ID or create a new one
 const getCaseStudyById = async (id: string): Promise<AdminCaseStudy | null> => {
   // For new case studies
   if (id === 'new') {
@@ -75,77 +77,44 @@ const getCaseStudyById = async (id: string): Promise<AdminCaseStudy | null> => {
     };
   }
 
-  // Mock data for existing case studies
-  const mockCaseStudies: Record<string, AdminCaseStudy> = {
-    '1': {
-      id: '1',
-      title: 'Enterprise SaaS Platform Redesign',
-      slug: 'enterprise-saas-redesign',
-      summary: 'A comprehensive redesign of a B2B SaaS platform that improved user satisfaction by 35% and reduced support tickets by 28%.',
-      featured_image_url: 'https://placehold.co/600x400/png',
-      published: true,
-      published_date: '2025-03-15',
-      created_at: '2025-02-20',
-      updated_at: '2025-03-15',
-      sections: [
-        {
-          id: '1',
-          case_study_id: '1',
-          section_type: 'challenge',
-          section_order: 1,
-          title: 'The Challenge',
-          content: 'The client\'s enterprise SaaS platform had grown organically over 5 years, resulting in an inconsistent user experience, declining user satisfaction, and increasing support costs.'
-        },
-        {
-          id: '2',
-          case_study_id: '1',
-          section_type: 'approach',
-          section_order: 2,
-          title: 'Our Approach',
-          content: 'We conducted extensive user research, including interviews with 25 customers, analysis of support tickets, and usability testing of the existing platform.'
-        }
-      ],
-      metrics: [
-        {
-          id: '1',
-          case_study_id: '1',
-          metric_type: 'user_impact',
-          label: 'User Satisfaction',
-          value: '+35%'
-        },
-        {
-          id: '2',
-          case_study_id: '1',
-          metric_type: 'business_impact',
-          label: 'Support Tickets',
-          value: '-28%'
-        }
-      ],
-      tags: ['UX Design', 'Product Strategy', 'B2B']
-    }
-  };
-
-  return mockCaseStudies[id] || null;
+  try {
+    // Get existing case study from API
+    const caseStudy = await getAdminCaseStudyById(id);
+    return caseStudy as AdminCaseStudy;
+  } catch (error) {
+    console.error('Error fetching case study:', error);
+    return null;
+  }
 };
 
+// Function to save a case study
 const saveCaseStudy = async (caseStudy: AdminCaseStudy): Promise<AdminCaseStudy> => {
-  // In a real implementation, this would send the data to your API
-  console.log('Saving case study:', caseStudy);
-  
-  // Simulate API response
-  return {
-    ...caseStudy,
-    updated_at: new Date().toISOString()
-  };
+  try {
+    if (caseStudy.id === 'new') {
+      // Create new case study
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...caseStudyData } = caseStudy;
+      const newCaseStudy = await createCaseStudy(caseStudyData as Omit<CaseStudy, 'id' | 'created_at' | 'updated_at'>);
+      return newCaseStudy as AdminCaseStudy;
+    } else {
+      // Update existing case study
+      const updatedCaseStudy = await updateCaseStudy(caseStudy.id, caseStudy as unknown as Partial<CaseStudy>);
+      return updatedCaseStudy as AdminCaseStudy;
+    }
+  } catch (error) {
+    console.error('Error saving case study:', error);
+    throw error;
+  }
 };
 
-// Placeholder for image upload function
+// Function to upload an image
 const uploadImage = async (file: File): Promise<string> => {
-  // In a real implementation, this would upload the image to Supabase storage
-  console.log('Uploading file:', file.name);
-  
-  // Simulate upload and return a placeholder URL
-  return 'https://placehold.co/600x400/png';
+  try {
+    return await uploadImageApi(file, 'case-studies');
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
 };
 
 export default function CaseStudyEditPage() {
