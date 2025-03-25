@@ -4,14 +4,14 @@
   "outputDirectory": ".next",
   "regions": ["sfo1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "PLACEHOLDER_API_URL",
-    "NEXT_PUBLIC_SUPABASE_URL": "PLACEHOLDER_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "PLACEHOLDER_SUPABASE_ANON_KEY"
+    "NEXT_PUBLIC_API_URL": "https://your-backend-api-url.com",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://imfmubnxmgxntqhjyqav.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZm11Ym54bWd4bnRxaGp5cWF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDM1NjIsImV4cCI6MjA1ODQxOTU2Mn0.HWFL2cLV2-WL6FoFMoEgc5nxBXbvTMj0Df6m00bQxU0"
   },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "PLACEHOLDER_API_URL/api/$1"
+      "dest": "https://your-backend-api-url.com/api/$1"
     }
   ]
 }

@@ -88,14 +88,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # This is a placeholder for the backend deployment
-      # Replace with the appropriate deployment steps for your chosen hosting service
-      - name: Deploy to Backend Hosting Service
-        run: echo "Deploying backend to hosting service"
-        # Example for Railway:
-        # - name: Install Railway CLI
-        #   run: npm i -g @railway/cli
-        # - name: Deploy to Railway
-        #   run: railway up
-        #   env:
-        #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      # Uncomment the appropriate section based on your chosen hosting service
+      
+      # Option 1: For Railway deployment
+      # - name: Install Railway CLI
+      #   run: npm i -g @railway/cli
+      # - name: Deploy to Railway
+      #   run: railway up --service personal-website-backend
+      #   env:
+      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      # Option 2: For Render deployment
+      # - name: Deploy to Render
+      #   uses: johnbeynon/render-deploy-action@v0.0.8
+      #   with:
+      #     service-id: ${{ secrets.RENDER_SERVICE_ID }}
+      #     api-key: ${{ secrets.RENDER_API_KEY }}
+      
+      # Placeholder until you choose a deployment option
+      - name: Placeholder deployment
+        run: echo "Please uncomment the appropriate deployment option in .github/workflows/ci-cd.yml"
