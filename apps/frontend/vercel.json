@@ -1,0 +1,17 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm build",
+  "outputDirectory": ".next",
+  "regions": ["sfo1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "PLACEHOLDER_API_URL",
+    "NEXT_PUBLIC_SUPABASE_URL": "PLACEHOLDER_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "PLACEHOLDER_SUPABASE_ANON_KEY"
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "PLACEHOLDER_API_URL/api/$1"
+    }
+  ]
+}
