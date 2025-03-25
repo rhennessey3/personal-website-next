@@ -8,7 +8,7 @@ import {
 } from '../controllers/case-studies';
 import { validateAuth, validateAdmin } from '../middleware/auth';
 import { validateQuery, validateParams, validateBody } from '../middleware/validate';
-import { caseStudySchema } from '@personal-website/shared';
+import { caseStudySchema } from '../schemas';
 import { z } from 'zod';
 
 const router = Router();

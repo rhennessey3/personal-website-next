@@ -8,7 +8,7 @@ import {
 } from '../controllers/blog-posts';
 import { validateAuth, validateAdmin } from '../middleware/auth';
 import { validateQuery, validateParams, validateBody } from '../middleware/validate';
-import { blogPostSchema } from '@personal-website/shared';
+import { blogPostSchema } from '../schemas';
 import { z } from 'zod';
 
 const router = Router();

@@ -6,7 +6,7 @@ import {
 } from '../controllers/profile';
 import { validateAuth, validateAdmin } from '../middleware/auth';
 import { validateBody, validateParams } from '../middleware/validate';
-import { profileSchema } from '@personal-website/shared';
+import { profileSchema } from '../schemas';
 import { z } from 'zod';
 
 const router = Router();

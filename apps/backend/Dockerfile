@@ -4,31 +4,17 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Copy package.json files for the monorepo
-COPY package.json pnpm-workspace.yaml turbo.json ./
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/config/package.json ./packages/config/
-COPY apps/backend/package.json ./apps/backend/
+# Copy the temporary package.json file
+COPY package.json.railway ./package.json
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN npm install
 
 # Copy the source code
-COPY packages/shared ./packages/shared
-COPY packages/config ./packages/config
-COPY apps/backend ./apps/backend
+COPY . .
 
-# Build the shared package first
-RUN cd packages/shared && pnpm build
-
-# Build the backend
-RUN cd apps/backend && pnpm build
-
-# Set the working directory to the backend
-WORKDIR /app/apps/backend
+# Build the application
+RUN npm run build
 
 # Expose the port the app will run on
 EXPOSE 8080

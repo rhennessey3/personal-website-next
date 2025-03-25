@@ -7,7 +7,7 @@ import {
 } from '../controllers/contact';
 import { validateAuth, validateAdmin } from '../middleware/auth';
 import { validateQuery, validateParams, validateBody } from '../middleware/validate';
-import { contactFormSchema } from '@personal-website/shared';
+import { contactFormSchema } from '../schemas';
 import { z } from 'zod';
 
 const router = Router();
