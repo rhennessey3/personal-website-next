@@ -6,19 +6,26 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { logout } from '@/lib/api';
+import Cookies from 'js-cookie';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<{ id: string; email: string; role: string } | null>(null);
 
-  // In a real application, we would check if the user is authenticated
-  // by verifying the token stored in cookies or local storage
+  // Check if the user is authenticated
   useEffect(() => {
-    // This is a placeholder for authentication check
-    const isAuthenticated = localStorage.getItem('auth_token');
+    const authToken = Cookies.get('auth_token');
+    const userInfo = localStorage.getItem('user');
     
-    if (!isAuthenticated) {
+    if (!authToken) {
       router.push('/admin/login');
+    } else if (userInfo) {
+      try {
+        setUser(JSON.parse(userInfo));
+      } catch (e) {
+        console.error('Failed to parse user info:', e);
+      }
     }
   }, [router]);
 
@@ -27,7 +34,10 @@ export default function AdminDashboard() {
     
     try {
       await logout();
-      localStorage.removeItem('auth_token');
+      // Remove auth token from cookies
+      Cookies.remove('auth_token', { path: '/' });
+      // Remove user info from localStorage
+      localStorage.removeItem('user');
       router.push('/admin/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -39,7 +49,12 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          {user && (
+            <p className="text-sm text-neutral-500">Logged in as: {user.email} ({user.role})</p>
+          )}
+        </div>
         <Button variant="outline" onClick={handleLogout} disabled={loading}>
           {loading ? 'Logging out...' : 'Logout'}
         </Button>

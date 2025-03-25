@@ -1,17 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { login } from '@/lib/api';
+import Cookies from 'js-cookie';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const fromPath = searchParams.get('from') || '/admin';
+
+  // Check if already logged in
+  useEffect(() => {
+    const authToken = Cookies.get('auth_token');
+    if (authToken) {
+      router.push('/admin');
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,8 +30,21 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login({ email, password });
-      router.push('/admin');
+      const response = await login({ email, password });
+      
+      // Store the token in a cookie (HTTP-only cookies would be set by the server in production)
+      Cookies.set('auth_token', response.token, {
+        expires: 7, // 7 days
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+      
+      // Store user info in localStorage for UI purposes
+      localStorage.setItem('user', JSON.stringify(response.user));
+      
+      // Redirect to the original path or admin dashboard
+      router.push(fromPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {
