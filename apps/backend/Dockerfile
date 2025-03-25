@@ -19,5 +19,8 @@ RUN npm run build
 # Expose the port the app will run on
 EXPOSE 8080
 
+# Make the start script executable
+RUN chmod +x start.sh
+
 # Start the application
-CMD ["node", "dist/server.js"]
+CMD ["./start.sh"]
