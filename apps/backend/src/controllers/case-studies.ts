@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import supabase, { formatSupabaseResponse } from '../services/supabase';
-import { CaseStudySchemaType } from '@personal-website/shared';
+import { CaseStudySchemaType } from '../schemas';
 
 export const getCaseStudies = async (req: Request, res: Response) => {
   try {

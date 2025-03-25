@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import supabase, { formatSupabaseResponse } from '../services/supabase';
-import { ProfileSchemaType } from '@personal-website/shared';
+import { ProfileSchemaType } from '../schemas';
 
 export const getProfile = async (req: Request, res: Response) => {
   try {

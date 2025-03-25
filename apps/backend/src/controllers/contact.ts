@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import supabase, { formatSupabaseResponse } from '../services/supabase';
-import { ContactFormSchemaType, ContactSubmissionSchemaType } from '@personal-website/shared';
+import { ContactFormSchemaType, ContactSubmissionSchemaType } from '../schemas';
 
 export const submitContactForm = async (req: Request, res: Response) => {
   try {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import supabase, { formatSupabaseResponse } from '../services/supabase';
-import { BlogPostSchemaType } from '@personal-website/shared';
+import { BlogPostSchemaType } from '../schemas';
 
 export const getBlogPosts = async (req: Request, res: Response) => {
   try {
