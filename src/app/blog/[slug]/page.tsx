@@ -3,6 +3,7 @@ import { PortableText } from "@portabletext/react";
 import imageUrlBuilder from '@sanity/image-url';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import type { NextPage } from 'next'; // Import NextPage type
 
 // Define the expected structure of a Blog Post from Sanity
 // Adjust based on your actual schema in sanity-schema.md
@@ -39,14 +40,15 @@ function urlFor(source: any) {
 }
 
 // Define props for the page component
-interface BlogPostPageProps {
-  params: {
-    slug: string;
-  };
+// Use Next.js standard PageProps structure
+interface PageProps {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined }; // Include searchParams even if unused
 }
 
 // Async Server Component to fetch and render the blog post
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+// Explicitly type the component using NextPage
+const BlogPostPage: NextPage<PageProps> = async ({ params }) => {
   const { slug } = params;
   const blogPost = await client.fetch<SanityBlogPost | null>(BLOG_POST_QUERY, { slug });
 
@@ -103,6 +105,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     </article>
   );
 }
+
+export default BlogPostPage; // Export the component
 
 // Optional: Generate static paths if using SSG
 // export async function generateStaticParams() {
