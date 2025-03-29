@@ -182,7 +182,8 @@ export default function AboutPage() {
   }
 
   const fullName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
-  const groupedSkills = groupSkillsByCategory(profileData.skills);
+  // Ensure an array is passed, even if profileData.skills is null/undefined
+  const groupedSkills = groupSkillsByCategory(profileData.skills || []);
 
   return (
     <div className="space-y-12">
