@@ -4,7 +4,7 @@
 
 ### Express.js Server Setup
 - ✅ TypeScript configuration
-- ✅ Monorepo structure with shared packages
+- ✅ Front-end-in one repo and the backend in another folder structure with shared packages
 - ✅ API routes and controllers for:
   - Profile management
   - Case studies

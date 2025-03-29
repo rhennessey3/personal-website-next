@@ -31,7 +31,7 @@ export default function Home() {
             <div className="flex gap-4 pt-4">
               <Spotlight className="rounded-lg">
                 <Button asChild size="lg">
-                  <Link href="/thinking">View My Work</Link>
+                  <Link href="/thinking?filter=case-study">View My Work</Link>
                 </Button>
               </Spotlight>
               <Spotlight className="rounded-lg">
@@ -113,7 +113,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Card3D>
-            
+
             <Card3D className="h-full">
               <Card className="h-full">
                 <CardHeader>
@@ -125,7 +125,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Card3D>
-            
+
             <Card3D className="h-full">
               <Card className="h-full">
                 <CardHeader>
@@ -141,57 +141,7 @@ export default function Home() {
         </section>
       </InteractiveBackground>
 
-      {/* Featured Work Section with Floating Elements */}
-      <section className="py-12">
-        <AnimatedText
-          text="Featured Work"
-          className="text-3xl font-bold mb-8 text-center"
-          delay={0.4}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <FloatingElement amplitude={5} frequency={0.3} offset={0}>
-            <Card3D className="h-full">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Case Study: Product Redesign</CardTitle>
-                  <CardDescription>Increasing user engagement by 45%</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>A comprehensive redesign of a digital product that improved user engagement metrics and business outcomes.</p>
-                </CardContent>
-                <CardFooter>
-                  <Spotlight className="rounded-lg">
-                    <Button variant="outline" asChild>
-                      <Link href="/thinking">Read Case Study</Link>
-                    </Button>
-                  </Spotlight>
-                </CardFooter>
-              </Card>
-            </Card3D>
-          </FloatingElement>
-          
-          <FloatingElement amplitude={5} frequency={0.3} offset={0.5}>
-            <Card3D className="h-full">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Blog: UX Strategy Framework</CardTitle>
-                  <CardDescription>A practical approach to UX strategy</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>An exploration of effective UX strategy frameworks that can be applied across different industries and product types.</p>
-                </CardContent>
-                <CardFooter>
-                  <Spotlight className="rounded-lg">
-                    <Button variant="outline" asChild>
-                      <Link href="/thinking">Read Article</Link>
-                    </Button>
-                  </Spotlight>
-                </CardFooter>
-              </Card>
-            </Card3D>
-          </FloatingElement>
-        </div>
-      </section>
+      {/* Featured Work Section Removed */}
     </div>
   );
 }
