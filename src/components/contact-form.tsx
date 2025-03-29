@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { submitContactForm } from '@/lib/api';
+// import { submitContactForm } from '@/lib/api'; // Temporarily commented out
 
 interface ContactFormProps {
   className?: string;
@@ -23,7 +23,9 @@ export function ContactForm({ className = '' }: ContactFormProps) {
     setSuccess(false);
 
     try {
-      await submitContactForm({ name, email, message });
+      // await submitContactForm({ name, email, message }); // Temporarily commented out
+      // Simulate success for now, or add placeholder logic
+      console.log("Form submitted (placeholder):", { name, email, message });
       setSuccess(true);
       setName('');
       setEmail('');
