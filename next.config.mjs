@@ -1,6 +1,6 @@
-import type { NextConfig } from "next";
+// Removed TypeScript import
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {

@@ -104,11 +104,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   );
 }
 
-// Optional: Generate static paths if using SSG
-// export async function generateStaticParams() {
-//   const slugs = await client.fetch<string[]>(`*[_type == "blogPost" && defined(slug.current)][].slug.current`);
-//   return slugs.map((slug) => ({ slug }));
-// }
+// Generate static paths for SSG
+export async function generateStaticParams() {
+  // Fetch all published blog post slugs
+  const slugs = await client.fetch<string[]>(
+    `*[_type == "blogPost" && defined(slug.current) && published == true][].slug.current`
+  );
+
+  // Return the expected format: array of objects with slug param
+  return slugs.map((slug) => ({
+    slug, // Matches the [slug] dynamic segment
+  }));
+}
 
 // Optional: Add revalidation logic if needed
 // export const revalidate = 60;
