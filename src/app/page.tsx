@@ -1,8 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from 'react'; // Import hooks
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { client } from '@/sanity/client'; // Import Sanity client
+import imageUrlBuilder from '@sanity/image-url'; // Import image URL builder
+import type { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder';
+import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
+// WavyBackground import removed as it's handled in layout
 import {
   AnimatedText,
   Card3D,
@@ -14,10 +20,44 @@ import {
 } from "@/components/ui/aceternity";
 
 export default function Home() {
-  return (
-    <div className="flex flex-col gap-16">
-      {/* Hero Section with Parallax */}
-      <Parallax className="py-8" baseVelocity={-2}>
+  // --- Start: Added for Profile Image ---
+  const [profileImage, setProfileImage] = useState<SanityImageSource | null>(null);
+  const [loadingImage, setLoadingImage] = useState(true);
+
+  // Configure image URL builder
+  const builder = imageUrlBuilder(client);
+  function urlFor(source: SanityImageSource): ImageUrlBuilder {
+    return builder.image(source);
+  }
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      setLoadingImage(true);
+      try {
+        // Fetch only the profileImage field from the first profile document
+        const query = `*[_type == "profile"][0]{ profileImage }`;
+        const data = await client.fetch<{ profileImage?: SanityImageSource } | null>(query);
+        if (data?.profileImage) {
+          setProfileImage(data.profileImage);
+        } else {
+          console.log("No profile image found in Sanity.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile image:", err);
+      } finally {
+        setLoadingImage(false);
+      }
+    };
+
+    fetchImage();
+  }, []); // Empty dependency array means fetch once on mount
+  // --- End: Added for Profile Image ---
+
+   return (
+     // WavyBackground is now handled in layout.tsx
+     <div className="flex flex-col gap-16"> {/* Original content structure */}
+       {/* Hero Section with Parallax */}
+       <Parallax className="py-8" baseVelocity={-2}>
         <section className="flex flex-col md:flex-row gap-8 items-center">
           <div className="flex-1 space-y-6">
             <AnimatedText
@@ -43,9 +83,19 @@ export default function Home() {
           </div>
           <div className="flex-1 flex justify-center">
             <FloatingElement amplitude={15} frequency={0.6}>
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-                {/* Placeholder for profile image */}
-                <span className="text-xl text-neutral-500">Profile Image</span>
+              {/* Updated image container */}
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center overflow-hidden">
+                {loadingImage ? (
+                  <span className="text-xl text-neutral-500">Loading...</span>
+                ) : profileImage ? (
+                  <img
+                    src={urlFor(profileImage).width(320).height(320).fit('crop').url()} // Use urlFor
+                    alt="Profile Image" // Add alt text
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xl text-neutral-500">Profile Image</span> // Fallback placeholder
+                )}
               </div>
             </FloatingElement>
           </div>
@@ -53,7 +103,7 @@ export default function Home() {
       </Parallax>
 
       {/* Metrics Section with AnimatedCounter */}
-      <section className="py-12 bg-neutral-50 dark:bg-neutral-900 rounded-xl">
+      <section className="py-12 rounded-xl"> {/* Removed background color */}
         <AnimatedText
           text="Impact by the Numbers"
           className="text-3xl font-bold mb-12 text-center"

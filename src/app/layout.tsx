@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google"; // Temporarily commented out
 import "./globals.css";
 import { Navbar } from "@/components/ui/navbar"; // Import Navbar
+// Removed WavyBackground import
 // Removed Sidebar imports
 // import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 // import {
@@ -50,7 +51,9 @@ export default function RootLayout({
         <Navbar items={topNavItems} />
 
         {/* Main content area takes remaining space */}
-        <main className="flex-1 p-4 md:p-8"> {/* Added flex-1 */}
+        <main className="flex-1 p-4 md:p-8"> {/* Reverted to original padding, removed relative/overflow */}
+          {/* WavyBackground component removed */}
+          {/* Actual page content */}
           {children}
         </main>
       </body>
