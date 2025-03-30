@@ -188,7 +188,7 @@ export default function AboutPage() {
   return (
     <div className="space-y-12">
       {/* Profile Section */}
-      <section className="flex flex-col md:flex-row gap-8 items-center">
+      <section className="flex flex-col md:flex-row gap-8 items-center max-w-3xl mx-auto"> {/* Added max-width and centering */}
         <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center overflow-hidden">
           {profileData.profileImage ? (
             <img
@@ -219,7 +219,7 @@ export default function AboutPage() {
 
       {/* Work Experience Section */}
       {profileData.workExperiences && profileData.workExperiences.length > 0 && (
-        <section>
+        <section className="max-w-3xl mx-auto"> {/* Added max-width and centering */}
           <h2 className="text-2xl font-bold mb-6">Work Experience</h2>
           <div className="space-y-6">
             {profileData.workExperiences.map((job) => (
@@ -256,7 +256,7 @@ export default function AboutPage() {
 
       {/* Education Section */}
       {profileData.educationHistory && profileData.educationHistory.length > 0 && (
-        <section>
+        <section className="max-w-3xl mx-auto"> {/* Added max-width and centering */}
           <h2 className="text-2xl font-bold mb-6">Education</h2>
           <div className="space-y-4">
             {profileData.educationHistory.map((edu) => (
@@ -285,7 +285,7 @@ export default function AboutPage() {
 
       {/* Skills Section */}
       {profileData.skills && profileData.skills.length > 0 && (
-        <section>
+        <section className="max-w-3xl mx-auto"> {/* Added max-width and centering */}
           <h2 className="text-2xl font-bold mb-6">Skills</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(groupedSkills).map(([category, skillsInCategory]) => (
@@ -312,7 +312,7 @@ export default function AboutPage() {
       )}
 
       {/* Contact Form Section */}
-      <section id="contact"> {/* Added ID for potential linking */}
+      <section id="contact" className="max-w-3xl mx-auto"> {/* Added max-width and centering */}
         <h2 className="text-2xl font-bold mb-6">Get In Touch</h2>
         <Card>
           <CardHeader>
