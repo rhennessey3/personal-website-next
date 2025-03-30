@@ -180,7 +180,7 @@ function ThinkingPageContent() {
               <Card key={post.id} className="flex flex-col h-full">
                 <CardHeader>
                   <div className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
-                    {post.type === "case-study" ? "Case Study" : "Blog Post"} • {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    {post.type === "case-study" ? "Case Study" : "Blog Post"} {/* Removed date */}
                   </div>
                   <CardTitle className="text-xl">{post.title}</CardTitle>
                   <CardDescription className="line-clamp-3">{post.summary}</CardDescription>
