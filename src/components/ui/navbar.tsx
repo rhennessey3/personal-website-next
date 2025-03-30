@@ -14,27 +14,27 @@ export function Navbar({ className, items, ...props }: NavbarProps) {
   return (
     <nav
       className={cn(
-        "flex items-center space-x-4 lg:space-x-6 bg-white dark:bg-neutral-950 p-4 shadow-sm",
+        "flex items-center space-x-4 lg:space-x-6 bg-[#181613] px-12 py-4 shadow-sm", // Increased horizontal padding
         className
       )}
       {...props}
     >
       <Link
         href="/"
-        className="text-xl font-bold text-neutral-900 dark:text-neutral-100"
+        className="text-xl font-bold text-[#F2F2EB]" // Changed text color
       >
         Richard Hennessey
       </Link>
       <div className="ml-auto flex items-center space-x-4">
         {items?.map((item) => (
-          <Button key={item.href} variant="ghost" asChild>
-            <Link
-              href={item.href}
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              {item.title}
-            </Link>
-          </Button>
+          // Removed Button wrapper, render Link directly
+          <Link
+            key={item.href} // Key moved to Link
+            href={item.href}
+            className="text-sm font-medium text-[#F2F2EB] transition-colors hover:text-[#d3c343] px-3 py-2 rounded-md" // Added padding/rounding for spacing/hover area
+          >
+            {item.title}
+          </Link>
         ))}
       </div>
     </nav>

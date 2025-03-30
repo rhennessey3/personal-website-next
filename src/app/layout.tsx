@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google"; // Temporarily commented out
+import { GeistSans, GeistMono } from 'geist/font'; // Import from 'geist/font'
 import "./globals.css";
 import { Navbar } from "@/components/ui/navbar"; // Import Navbar
 // Removed WavyBackground import
@@ -14,15 +14,9 @@ import { Navbar } from "@/components/ui/navbar"; // Import Navbar
 // import Link from "next/link";
 // import { motion } from "framer-motion";
 
-// const geistSans = Geist({ // Temporarily commented out
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-//
-// const geistMono = Geist_Mono({ // Temporarily commented out
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+// Directly use the imported font objects for their variable names
+// const geistSans = GeistSans; // No need to call it like a function
+// const geistMono = GeistMono;
 
 export const metadata: Metadata = {
   title: "Richard Hennessey | Product Management & UX Strategy",
@@ -45,13 +39,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900`} // Removed font variables
+        className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900`} // Explicitly added font-sans
       >
         {/* Add Navbar at the top */}
         <Navbar items={topNavItems} />
 
         {/* Main content area takes remaining space */}
-        <main className="flex-1 p-4 md:p-8"> {/* Reverted to original padding, removed relative/overflow */}
+        <main className="flex-1 p-8 md:p-16 bg-[#F2F2EB]"> {/* Doubled padding */}
           {/* WavyBackground component removed */}
           {/* Actual page content */}
           {children}

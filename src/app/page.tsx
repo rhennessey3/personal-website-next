@@ -55,14 +55,14 @@ export default function Home() {
 
    return (
      // WavyBackground is now handled in layout.tsx
-     <div className="flex flex-col gap-16"> {/* Original content structure */}
-       {/* Hero Section with Parallax */}
-       <Parallax className="py-8" baseVelocity={-2}>
-        <section className="flex flex-col md:flex-row gap-8 items-center">
+     <div className="flex flex-col bg-[#F2F2EB]"> {/* Removed gap-16 */}
+       {/* Hero Section */}
+       <section className="py-16"> {/* Removed min-h-screen, flex, items-center; Added py-16 back */}
+        <div className="flex flex-col md:flex-row gap-8 items-center w-full"> {/* Replaced inner section with div */}
           <div className="flex-1 space-y-6">
             <AnimatedText
               text="Aligning Product Vision with Business Needs"
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight" // Removed font-kinetic
             />
             <p className="text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl">
               With over 10 years of experience in product management and UX strategy,
@@ -99,11 +99,11 @@ export default function Home() {
               </div>
             </FloatingElement>
           </div>
-        </section>
-      </Parallax>
+        </div>
+      </section> {/* Corrected closing tag */}
 
       {/* Metrics Section with AnimatedCounter */}
-      <section className="py-12 rounded-xl"> {/* Removed background color */}
+      <section className="py-16 rounded-xl"> {/* Increased padding to py-16 */}
         <AnimatedText
           text="Impact by the Numbers"
           className="text-3xl font-bold mb-12 text-center"
@@ -139,13 +139,13 @@ export default function Home() {
 
       {/* Expertise Section with InteractiveBackground */}
       <InteractiveBackground
-        className="py-12 rounded-xl"
+        className="py-16 rounded-xl" // Added py-16 for consistent spacing
         dotSize={2}
         dotSpacing={30}
         dotOpacity={0.3}
         dotColor="var(--primary)"
       >
-        <section>
+        <section> {/* Removed inner padding */}
           <AnimatedText
             text="Areas of Expertise"
             className="text-3xl font-bold mb-8 text-center"
@@ -195,3 +195,4 @@ export default function Home() {
     </div>
   );
 }
+

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Custom font definition removed */
+
 @custom-variant dark (&amp;:is(.dark *));
 
 @theme inline {
