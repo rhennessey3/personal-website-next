@@ -40,13 +40,14 @@ function urlFor(source: any) {
 
 // Define props for the page component
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Async Server Component to fetch and render the blog post
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+export default async function BlogPostPage(props: BlogPostPageProps) {
+  const params = await props.params;
   const { slug } = params;
   const blogPost = await client.fetch<SanityBlogPost | null>(BLOG_POST_QUERY, { slug });
 
