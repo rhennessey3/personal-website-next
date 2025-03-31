@@ -51,13 +51,14 @@ function urlFor(source: any) {
 
 // Define props for the page component
 interface CaseStudyPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Async Server Component to fetch and render the case study
-export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
+export default async function CaseStudyPage(props: CaseStudyPageProps) {
+  const params = await props.params;
   const { slug } = params;
   const caseStudy = await client.fetch<SanityCaseStudy | null>(CASE_STUDY_QUERY, { slug });
 
