@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { siteConfig } from "@/config/site";
-import RhLogo from '@/assets/rh.svg';
+import RickHennesseyLogo from '@/assets/rickhennesseylogo.svg'; // Import new logo component
 // Removed Footer import
 
 export function AppSidebar() {
@@ -21,14 +21,17 @@ export function AppSidebar() {
       {/* Top Section (Profile, Nav, Socials, Resume) */}
       {/* Removed outer div */}
       {/* Profile Header */}
-      <div className="flex flex-col items-center gap-2 p-4 border-b border-neutral-700"> {/* Reverted gap-4 back to gap-2 */}
-        {/* Logo Container */}
-        <div className="w-28 h-28 bg-white dark:bg-transparent flex items-center justify-center overflow-hidden p-2"> {/* Removed mb-2 */}
-          <RhLogo className="w-[95%] h-[95%] object-contain" />
-        </div>
+      <div className="flex flex-col items-center pt-2 pb-4 px-4 border-b-[0.5px] border-neutral-800"> {/* Removed gap-2 */}
+        {/* Logo Container wrapped in Link */}
+        <Link href="/" aria-label="Homepage">
+          <div className="w-28 bg-white dark:bg-transparent flex items-center justify-center p-2"> {/* Removed h-28 */}
+            {/* Use new logo component, removed sizing classes */}
+            <RickHennesseyLogo />
+          </div>
+        </Link>
        <div className="text-center w-[200px] leading-tight"> {/* Added leading-tight */}
-         <div className="font-semibold text-neutral-400">{siteConfig.name}</div>
-         <div className="text-xs text-neutral-400">{siteConfig.title}</div>
+         {/* Removed name display */}
+         <div className="text-xs text-neutral-500 px-[5px]">{siteConfig.title}</div> {/* Added px-[5px] */}
         </div>
       </div>
       {/* Removed pink border variable usage */}

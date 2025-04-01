@@ -11,7 +11,7 @@ export function Footer() {
       {/* Kept flex layout, removed container/mx-auto/gap */}
       <div className="flex flex-col md:flex-row items-center">
         {/* Left Div: Read Resume Button - Width matches sidebar, button centered inside */}
-        <div className="flex justify-center w-[171px]"> {/* Adjusted width to match new sidebar width */}
+        <div className="flex justify-center w-[140px]"> {/* Adjusted width for wider sidebar */}
           <a
             href={siteConfig.resumeUrl}
             target="_blank"

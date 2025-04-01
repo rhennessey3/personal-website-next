@@ -23,7 +23,7 @@ export interface SocialLink {
 
 export const siteConfig = {
   name: "Rick Hennessey", // Updated name
-  title: "Product & UX", // Optional: Add site title/tagline
+  title: "Product Management", // Updated title
   logo: "/rh.svg", // Path to logo
   resumeUrl: "/resume", // Updated resume link to internal page
   sidebarNav: [
@@ -36,8 +36,8 @@ export const siteConfig = {
     { label: "LinkedIn", href: "https://www.linkedin.com/in/richardhennessey3", icon: <img src="/linkedin.svg" alt="LinkedIn" className="h-5 w-5" /> },
     // Updated Instagram href
     { label: "Instagram", href: "https://www.instagram.com/rhennessey3/", icon: <img src="/instagram.svg" alt="Instagram" className="h-5 w-5" /> },
-    // Added Spotify icon
-    { label: "Spotify", href: "#", icon: <img src="/spotify.svg" alt="Spotify" className="h-5 w-5" /> },
+    // Updated Spotify href
+    { label: "Spotify", href: "https://open.spotify.com/user/rhennessey?si=732fa48c9b2c4233", icon: <img src="/spotify.svg" alt="Spotify" className="h-5 w-5" /> },
     // Updated Email icon size
     { label: "Email", href: "#", icon: <img src="/email.svg" alt="Email" className="h-5 w-5" /> },
   ] as SocialLink[], // Assert type for stricter checking
