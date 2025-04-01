@@ -72,11 +72,11 @@ const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-screen px-4 py-4 hidden md:flex flex-col bg-white dark:bg-neutral-950 w-[200px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Changed light mode bg to white, Added fixed positioning
+          "h-screen px-4 py-4 hidden md:flex flex-col bg-white dark:bg-neutral-950 w-[150px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Reduced base width by 50px
           className
         )}
         animate={{
-          width: "221px",
+          width: "171px", // Reduced animated width by 50px
         }}
         {...props}
       >

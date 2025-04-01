@@ -22,22 +22,24 @@ export interface SocialLink {
 }
 
 export const siteConfig = {
-  name: "Richard Hennessey III", // Optional: Add site name/owner
+  name: "Rick Hennessey", // Updated name
   title: "Product & UX", // Optional: Add site title/tagline
   logo: "/rh.svg", // Path to logo
-  resumeUrl: "#", // Placeholder for resume link
+  resumeUrl: "/resume", // Updated resume link to internal page
   sidebarNav: [
     { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> }, // Keep nav icons small
     { href: "/thinking", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> }, // Keep nav icons small
     { href: "/about", label: "About", icon: <IconUser className="h-4 w-4" /> }, // Keep nav icons small
   ] as NavItem[], // Assert type for stricter checking
   socialLinks: [
-    // Updated LinkedIn icon size
-    { label: "LinkedIn", href: "#", icon: <img src="/linkedin.svg" alt="LinkedIn" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
-    // Updated Instagram icon size
-    { label: "Instagram", href: "#", icon: <img src="/instagram.svg" alt="Instagram" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
+    // Updated LinkedIn href
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/richardhennessey3", icon: <img src="/linkedin.svg" alt="LinkedIn" className="h-5 w-5" /> },
+    // Updated Instagram href
+    { label: "Instagram", href: "https://www.instagram.com/rhennessey3/", icon: <img src="/instagram.svg" alt="Instagram" className="h-5 w-5" /> },
+    // Added Spotify icon
+    { label: "Spotify", href: "#", icon: <img src="/spotify.svg" alt="Spotify" className="h-5 w-5" /> },
     // Updated Email icon size
-    { label: "Email", href: "#", icon: <img src="/email.svg" alt="Email" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
+    { label: "Email", href: "#", icon: <img src="/email.svg" alt="Email" className="h-5 w-5" /> },
   ] as SocialLink[], // Assert type for stricter checking
 };
 
