@@ -2,7 +2,8 @@
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "framer-motion"; // Corrected import path for framer-motion
+import { AnimatePresence, motion } from "framer-motion";
+// Import icons from @tabler/icons-react again
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
 interface Links {
@@ -21,7 +22,7 @@ const SidebarContext = createContext<SidebarContextProps | undefined>(
   undefined
 );
 
-export const useSidebar = () => {
+const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider");
@@ -29,7 +30,7 @@ export const useSidebar = () => {
   return context;
 };
 
-export const SidebarProvider = ({
+const SidebarProvider = ({
   children,
   open: openProp,
   setOpen: setOpenProp,
@@ -52,25 +53,7 @@ export const SidebarProvider = ({
   );
 };
 
-export const Sidebar = ({
-  children,
-  open,
-  setOpen,
-  animate,
-}: {
-  children: React.ReactNode;
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  animate?: boolean;
-}) => {
-  return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
-      {children}
-    </SidebarProvider>
-  );
-};
-
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   return (
     <>
       <DesktopSidebar {...props} />
@@ -79,7 +62,7 @@ export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   );
 };
 
-export const DesktopSidebar = ({
+const DesktopSidebar = ({
   className,
   children,
   ...props
@@ -89,14 +72,12 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0", // Adjusted default width and background
+          "h-screen px-4 py-4 hidden md:flex flex-col bg-white dark:bg-neutral-950 w-[200px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Changed light mode bg to white, Added fixed positioning
           className
         )}
         animate={{
-          width: animate ? (open ? "300px" : "60px") : "300px",
+          width: "221px",
         }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
         {...props}
       >
         {children}
@@ -105,7 +86,29 @@ export const DesktopSidebar = ({
   );
 };
 
-export const MobileSidebar = ({
+const MobileHeader = ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
+  const { open, setOpen } = useSidebar();
+  return (
+    <div
+      className={cn(
+        "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex justify-end z-20 w-full">
+        <span className="text-lg font-bold mr-auto">R H</span>
+        {/* Use Tabler IconMenu2 icon */}
+        <IconMenu2
+          className="text-neutral-800 dark:text-neutral-200"
+          onClick={() => setOpen(!open)}
+        />
+      </div>
+    </div>
+  );
+};
+
+const MobileSidebar = ({
   className,
   children,
   ...props
@@ -113,23 +116,9 @@ export const MobileSidebar = ({
   const { open, setOpen } = useSidebar();
   return (
     <>
-      <div
-        className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full" // Adjusted background
-        )}
-        {...props}
-      >
-        <div className="flex justify-end z-20 w-full"> {/* Changed to justify-end to move icon right */}
-           {/* Placeholder for Logo/Title on mobile if needed */}
-           <span className="text-lg font-bold mr-auto">R H</span> {/* Example */}
-          <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200"
-            onClick={() => setOpen(!open)}
-          />
-        </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div
+      <AnimatePresence>
+        {open && (
+          <motion.div
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
@@ -146,47 +135,45 @@ export const MobileSidebar = ({
                 className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
                 onClick={() => setOpen(!open)}
               >
+                {/* Use Tabler IconX icon */}
                 <IconX />
               </div>
               {children}
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
     </>
   );
 };
 
-export const SidebarLink = ({
+const SidebarLink = ({
   link,
   className,
   ...props
 }: {
   link: Links;
   className?: string;
-  props?: LinkProps; // Use LinkProps from next/link
+  props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
   return (
     <Link
       href={link.href}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2",
+        "flex items-center justify-start group/sidebar py-2", // Removed gap-2
         className
       )}
       {...props}
     >
-      {link.icon}
-
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+      {/* {link.icon} // Icon removed */}
+      {/* Removed text-sm, added font-semibold to match CardTitle */}
+      <span
+        className="text-neutral-900 dark:text-neutral-100 font-semibold group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
-      </motion.span>
+      </span>
     </Link>
   );
 };
+
+export { SidebarProvider, useSidebar, SidebarBody, DesktopSidebar, MobileHeader, MobileSidebar, SidebarLink };

@@ -13,10 +13,16 @@ const config = {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
+        // "navbp": "830px", // Moved to extend.screens
+        "2xl": "1400px", // Keep 2xl here if only for container max-width
       },
     },
+    screens: { // Define directly under theme.screens
+      "navbp": "830px",
+      // Add back sm, md, lg, xl, 2xl if needed later
+    },
     extend: {
+      // screens object removed from extend
       fontFamily: {
         // Link Tailwind's 'sans' utility to your CSS variable
         sans: ["var(--font-geist-sans)", 'system-ui', 'sans-serif'],
