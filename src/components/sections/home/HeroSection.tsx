@@ -14,8 +14,8 @@ interface HeroSectionProps {
 
 export function HeroSection({ profileImage, loadingImage, urlFor }: HeroSectionProps) {
   return (
-    // Changed py-16 to pt-[60px] pb-16
-    <section className="pt-[60px] pb-16">
+    // Changed py-16 to pt-[60px] pb-16, then pt-[60px] to pt-[90px]
+    <section className="pt-[90px] pb-16"> {/* Changed pt-[60px] to pt-[90px] */}
       <div className="flex flex-col md:flex-row gap-8 items-center w-full">
         <div className="flex-1 space-y-6">
           <AnimatedText

@@ -35,7 +35,7 @@ export default function RootLayout({
             <AppSidebar />
 
             {/* Main content area - Added pb-12 for fixed footer */}
-            <main className="flex flex-col flex-1 p-8 md:p-16 pb-12 bg-[url('/background.svg')] bg-cover bg-center bg-no-repeat md:ml-[260px]">
+            <main className="flex flex-col flex-1 p-8 md:p-16 pb-12 bg-[url('/background.svg')] bg-cover bg-center bg-no-repeat md:ml-[220px]"> {/* Changed margin from 260px to 220px */}
               {children}
             </main>
           </div> {/* Closing tag for the main flex container */}

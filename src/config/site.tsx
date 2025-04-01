@@ -3,9 +3,9 @@ import {
   IconHome,
   IconNotebook,
   IconUser,
-  IconBrandLinkedin, // Keep LinkedIn
-  IconBrandInstagram, // Add Instagram
-  IconBrandSpotify, // Add Spotify
+  // IconBrandLinkedin removed
+  // IconBrandInstagram removed
+  // IconBrandSpotify removed
 } from "@tabler/icons-react";
 import { ReactElement } from "react"; // Import ReactElement for icon type
 
@@ -27,15 +27,17 @@ export const siteConfig = {
   logo: "/rh.svg", // Path to logo
   resumeUrl: "#", // Placeholder for resume link
   sidebarNav: [
-    { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> },
-    { href: "/thinking", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> },
-    { href: "/about", label: "About", icon: <IconUser className="h-4 w-4" /> },
+    { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> }, // Keep nav icons small
+    { href: "/thinking", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> }, // Keep nav icons small
+    { href: "/about", label: "About", icon: <IconUser className="h-4 w-4" /> }, // Keep nav icons small
   ] as NavItem[], // Assert type for stricter checking
   socialLinks: [
-    // Updated order and icons
-    { label: "LinkedIn", href: "#", icon: <IconBrandLinkedin className="h-4 w-4" /> },
-    { label: "Instagram", href: "#", icon: <IconBrandInstagram className="h-4 w-4" /> },
-    { label: "Spotify", href: "#", icon: <IconBrandSpotify className="h-4 w-4" /> },
+    // Updated LinkedIn icon size
+    { label: "LinkedIn", href: "#", icon: <img src="/linkedin.svg" alt="LinkedIn" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
+    // Updated Instagram icon size
+    { label: "Instagram", href: "#", icon: <img src="/instagram.svg" alt="Instagram" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
+    // Updated Email icon size
+    { label: "Email", href: "#", icon: <img src="/email.svg" alt="Email" className="h-5 w-5" /> }, // Changed h-4 w-4 to h-5 w-5
   ] as SocialLink[], // Assert type for stricter checking
 };
 
