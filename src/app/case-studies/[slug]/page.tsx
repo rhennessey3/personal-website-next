@@ -22,7 +22,8 @@ interface SanityCaseStudy {
     sectionType: string; // May not be needed if layout handles visual distinction
     content: any[]; // Portable Text content
     image?: { asset: { _ref: string } }; // Optional section image
-    layout?: 'textLeft' | 'imageLeft'; // Optional layout preference
+    layout?: 'textLeft' | 'imageLeft' | 'twoColumnText'; // Added twoColumnText layout
+    contentRight?: any[]; // Added field for second text column
   }[];
   metrics?: { // Assuming metrics are objects within an array
     _key: string;
@@ -49,7 +50,8 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
     sectionType,
     content,
     image, // Fetch section image
-    layout // Fetch layout preference
+    layout, // Fetch layout preference
+    contentRight // Fetch second text column content
   },
   metrics[]{_key, label, value}
 }`;
@@ -85,7 +87,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     <> {/* Use Fragment inside */}
       {/* Full Width Header Section */}
       {caseStudy.featuredImage && (
-        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] border border-red-500"> {/* Reverted to w-full */}
+        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px]"> {/* Reverted to w-full */}
           {/* Background Image */}
           <Image
             src={urlFor(caseStudy.featuredImage).width(1600).height(900).url()} // Reverted dimensions
@@ -93,18 +95,18 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             layout="fill"
             objectFit="cover"
             priority
-            className="z-0 border border-orange-500" // Ensure image is behind the overlay
+            className="z-0" // Ensure image is behind the overlay
           />
           {/* Overlay for Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10 border border-yellow-500"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10"></div>
 
           {/* Text Content Overlay */}
-          <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white max-w-3xl border border-lime-500">
+          <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white max-w-3xl">
              {/* Category Removed */}
              {/* Title */}
-             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3 border border-green-500">{caseStudy.title}</h1>
+             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3">{caseStudy.title}</h1>
              {/* Subtitle (Requires Sanity Field: 'subtitle') */}
-             <p className="text-lg md:text-xl text-neutral-200 border border-teal-500">{caseStudy.subtitle || 'Placeholder subtitle describing the project.'}</p>
+             <p className="text-lg md:text-xl text-neutral-200">{caseStudy.subtitle || 'Placeholder subtitle describing the project.'}</p>
              {/* Removed Summary */}
              {/* Date and Tags could be moved elsewhere */}
           </div>
@@ -112,15 +114,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
       )}
 
       {/* Constrained Content Area */}
-      <article className="space-y-8 border border-cyan-500"> {/* Removed max-w-4xl mx-auto, Removed padding comment */}
+      <article className="space-y-8 px-8"> {/* Added px-8 */} {/* Removed max-w-4xl mx-auto, Removed padding comment */}
 
         {/* Metrics */}
         {caseStudy.metrics && caseStudy.metrics.length > 0 && (
-          <section className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-center border border-blue-500">
+          <section className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {caseStudy.metrics.map((metric) => (
-              <div key={metric._key} className="border border-indigo-500">
-                <p className="text-2xl font-bold text-primary border border-violet-500">{metric.value}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 border border-purple-500">{metric.label}</p>
+              <div key={metric._key}>
+                <p className="text-2xl font-bold text-primary">{metric.value}</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">{metric.label}</p>
               </div>
             ))}
           </section>
@@ -128,50 +130,69 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Sections */}
         {caseStudy.sections && caseStudy.sections.length > 0 && (
-          <div className="space-y-12 md:space-y-16 border border-fuchsia-500"> {/* Increased spacing between sections */}
+          <div className="space-y-12 md:space-y-16"> {/* Increased spacing between sections */}
             {caseStudy.sections.map((section, index) => (
-              <section key={section._key} className="space-y-4 border border-pink-500">
+              <section key={section._key} className="space-y-4"> {/* Removed px-8 */}
                 {/* Section Title - Optional: Hide if you want title within the text column */}
                 {/* <h2 className="text-3xl font-semibold border-b pb-2 mb-4">{section.title}</h2> */}
   
                 {section.image ? (
                   // Two-column layout (Image + Text)
-                  <div
-                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-start border border-rose-500 ${
+                  <div // Image + Text Container
+                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-center pr-8 ${ // Changed px-8 to pr-8, Changed items-end to items-center
                       // Use layout field if present, otherwise alternate based on index (even index = text left, odd index = image left)
                       (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'md:flex-row-reverse' : ''
                     }`}
                   >
                     {/* Text Content Column */}
-                    <div className={`w-full md:w-1/2 flex-shrink-0 border border-red-600 ${
-                      // Add padding based on text position: pl if text is left, pr if text is right
-                      (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0))
-                        ? 'md:pr-8' // Text is on the right (image left), add right padding
-                        : 'md:pl-8' // Text is on the left (image right), add left padding
-                    }`}>
+                    <div className={`w-full md:w-1/2 flex-shrink-0`}> {/* Removed conditional padding */}
                        {/* Render Title within text column */}
-                       <h2 className="text-3xl font-semibold mb-4 border border-orange-600">{section.title}</h2>
-                       <div className="prose prose-lg dark:prose-invert max-w-none border border-yellow-600">
+                       <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
+                       <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed px-8 */}
                          <PortableText value={section.content} />
                        </div>
                     </div>
                     {/* Image Column */}
-                    <div className="w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 border border-lime-600 flex justify-center"> {/* Added flex justify-center */}
+                    <div className={`w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 flex justify-center ${
+                      // Apply left padding only when the image is on the left (i.e., parent has md:flex-row-reverse)
+                      (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'pl-[45px]' : ''
+                    }`}> {/* Conditionally added pl-[45px] */}
                       <Image
                         src={urlFor(section.image).width(800).height(600).auto('format').quality(80).url()}
                         alt={section.title || 'Section image'}
                         width={800}
                         height={600}
-                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3] border border-green-600" // Added mx-auto and moved existing classes here
+                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3]" // Added mx-auto and moved existing classes here
                       />
                     </div>
                   </div>
+                ) : section.layout === 'twoColumnText' ? (
+                  // --- Two Column Text Layout ---
+                  <div> {/* Two Column Text Container - Removed px-8 */} {/* Wrapper for title + columns */}
+                    <h2 className="text-3xl font-semibold mb-4">{section.title}</h2> {/* Title above columns */}
+                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start"> {/* Removed px-8 */}
+                      {/* Left Text Column */}
+                      <div className="w-full md:w-1/2 flex-shrink-0"> {/* Removed md:pl-8 */}
+                         <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed md:pl-8 */}
+                           <PortableText value={section.content} />
+                         </div>
+                      </div>
+                      {/* Right Text Column */}
+                      <div className="w-full md:w-1/2 flex-shrink-0"> {/* Removed md:pr-8 */}
+                         {section.contentRight && ( // Check if contentRight exists
+                           <div className="prose prose-lg dark:prose-invert max-w-none pr-[75px]"> {/* Removed md:pr-8, Changed pl to pr */}
+                             <PortableText value={section.contentRight} />
+                           </div>
+                         )}
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  // Text-only layout
-                  <div className="border border-teal-600">
-                     <h2 className="text-3xl font-semibold mb-4 border border-cyan-600">{section.title}</h2>
-                     <div className="prose prose-lg dark:prose-invert max-w-none border border-blue-600">
-                       <PortableText value={section.content} />
+                   // --- Default Single Column Text Layout ---
+                   <div className="w-full"> {/* Removed px-8, Added w-full */}
+                     <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
+                     <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed px-8 */}
+                       <PortableText value={section.content} /> {/* Keep original single column */}
                      </div>
                   </div>
                 )}
@@ -182,7 +203,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   
         {/* Fallback if no sections */}
         {(!caseStudy.sections || caseStudy.sections.length === 0) && (
-           <p className="text-neutral-500 border border-indigo-600">Content coming soon...</p>
+           <p className="text-neutral-500">Content coming soon...</p>
         )}
 
       </article>
