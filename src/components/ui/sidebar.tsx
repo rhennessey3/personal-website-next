@@ -1,10 +1,13 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react"; // Import useEffect
 import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation"; // Import usePathname
 // Import icons from @tabler/icons-react again
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import RickHennesseyLogo from '@/assets/rickhennesseylogo.svg'; // Import desktop logo
+import MobileRhLogo from '@/assets/mobielrh.svg'; // Import mobile logo
 
 interface Links {
   label: string;
@@ -91,19 +94,22 @@ const MobileHeader = ({ className, ...props }: React.HTMLAttributes<HTMLElement>
   return (
     <div
       className={cn(
-        "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full",
+        "h-10 px-4 py-4 flex flex-row md:hidden items-center bg-neutral-100 dark:bg-neutral-800 w-full", // Removed justify-between
         className
       )}
       {...props}
     >
-      <div className="flex justify-end z-20 w-full">
-        <span className="text-lg font-bold mr-auto">R H</span>
+      {/* Removed inner div wrapper */}
+        {/* Replace text with logo, set explicit height */}
+        <Link href="/" aria-label="Homepage" className="flex items-center"> {/* Wrap logo in link, removed mr-auto */}
+          <MobileRhLogo className="h-8 w-auto text-neutral-800 dark:text-neutral-200" /> {/* Use mobile logo, added text color for light/dark mode */}
+        </Link>
         {/* Use Tabler IconMenu2 icon */}
         <IconMenu2
-          className="text-neutral-800 dark:text-neutral-200"
+          className="text-neutral-800 dark:text-neutral-200 h-6 w-6 ml-auto" // Added ml-auto
           onClick={() => setOpen(!open)}
         />
-      </div>
+      {/* Removed closing tag for inner div */}
     </div>
   );
 };
@@ -114,6 +120,15 @@ const MobileSidebar = ({
   ...props
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
+  const pathname = usePathname(); // Get current pathname
+  // Effect to close sidebar on route change
+  useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]); // Re-run effect when pathname changes
+
   return (
     <>
       <AnimatePresence>
@@ -146,6 +161,7 @@ const MobileSidebar = ({
   );
 };
 
+// Remove the onClick handler from SidebarLink as it's now handled by the effect
 const SidebarLink = ({
   link,
   className,
@@ -155,7 +171,7 @@ const SidebarLink = ({
   className?: string;
   props?: LinkProps;
 }) => {
-  const { open, animate } = useSidebar();
+  const { open, animate, setOpen } = useSidebar(); // Destructure setOpen
   return (
     <Link
       href={link.href}
@@ -163,7 +179,7 @@ const SidebarLink = ({
         "flex items-center justify-center group/sidebar py-2", // Changed justify-start to justify-center
         className
       )}
-      {...props}
+      {...props} // Removed onClick handler
     >
       {/* {link.icon} // Icon removed */}
       {/* Removed text-sm, added font-semibold to match CardTitle */}

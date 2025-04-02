@@ -50,7 +50,7 @@ export function AppSidebar() {
         {/* Reverted absolute positioning back to mt-auto, adjusted bottom padding */}
         <div className={`mt-auto pt-4 pb-[120px] flex items-center`}> {/* Changed pb-[200px] to pb-[120px] */}
           {/* Changed back to flex-col, items-center, removed gap, added conditional margins */}
-          <div className="flex flex-col items-center px-4 w-full"> {/* Removed gap-y-[50px] */}
+          <div className="flex flex-row items-center justify-center px-4 w-full gap-x-6"> {/* Changed to flex-row, added justify-center and gap-x */}
             {siteConfig.socialLinks.map((item, idx) => (
               <Link
                 key={idx}
@@ -58,7 +58,7 @@ export function AppSidebar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 // Removed orange border variable usage, updated conditional margin-bottom for new icon
-                className={`text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ${idx === 0 ? 'mb-[50px]' : ''} ${idx === 1 ? 'mb-[60px]' : ''} ${idx === 2 ? 'mb-[50px]' : ''}`}
+                className={`text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors`} // Removed conditional margins
                 aria-label={item.label}
               >
                 {/* Render icon directly from config to respect its defined props (like className) */}

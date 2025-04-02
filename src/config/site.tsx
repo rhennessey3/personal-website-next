@@ -27,7 +27,7 @@ export const siteConfig = {
   logo: "/rh.svg", // Path to logo
   resumeUrl: "/resume", // Updated resume link to internal page
   sidebarNav: [
-    { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> }, // Keep nav icons small
+    // { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> }, // Removed Home link
     { href: "/thinking", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> }, // Keep nav icons small
     { href: "/about", label: "About", icon: <IconUser className="h-4 w-4" /> }, // Keep nav icons small
   ] as NavItem[], // Assert type for stricter checking

@@ -9,9 +9,9 @@ export function Footer() {
     // Removed px-8, kept py-6
     <footer className="fixed bottom-0 left-0 w-full bg-neutral-950 text-neutral-400 py-6 text-sm z-10"> {/* Removed red border */}
       {/* Kept flex layout, removed container/mx-auto/gap */}
-      <div className="flex flex-col md:flex-row items-center">
+      <div className="flex flex-row justify-between items-center px-8"> {/* Changed flex-col to flex-row, added justify-between, added px-8 */}
         {/* Left Div: Read Resume Button - Width matches sidebar, button centered inside */}
-        <div className="flex justify-center w-[140px]"> {/* Adjusted width for wider sidebar */}
+        <div className="flex justify-start"> {/* Removed fixed width and justify-center */}
           <a
             href={siteConfig.resumeUrl}
             target="_blank"
@@ -29,7 +29,7 @@ export function Footer() {
         </div>
 
         {/* Right Div: Signature SVG - Pushed to the right, added padding right */}
-        <div className="ml-auto pr-8"> {/* Removed lime border */}
+        <div className="flex justify-end"> {/* Removed ml-auto and pr-8 (padding handled by parent) */}
           <img src="/Signature.svg" alt="Signature" className="h-8" /> {/* Added height class, adjust as needed */}
         </div>
       </div>

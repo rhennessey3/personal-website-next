@@ -18,8 +18,10 @@ const config = {
       },
     },
     screens: { // Define directly under theme.screens
+      'xs': '376px', // Added extra-small breakpoint
+      'md': '768px', // Added standard md breakpoint
       "navbp": "830px",
-      // Add back sm, md, lg, xl, 2xl if needed later
+      // Add back sm, lg, xl, 2xl if needed later
     },
     extend: {
       // screens object removed from extend
