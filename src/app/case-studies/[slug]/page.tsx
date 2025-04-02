@@ -81,10 +81,11 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   const displayDate = caseStudy.publishedDate || caseStudy._createdAt;
 
   return (
-    <> {/* Use Fragment as root */}
+    <div className="-m-8 md:-m-16"> {/* Negative margins to counteract layout padding */}
+    <> {/* Use Fragment inside */}
       {/* Full Width Header Section */}
       {caseStudy.featuredImage && (
-        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px]"> {/* Reverted to w-full */}
+        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] border border-red-500"> {/* Reverted to w-full */}
           {/* Background Image */}
           <Image
             src={urlFor(caseStudy.featuredImage).width(1600).height(900).url()} // Reverted dimensions
@@ -92,18 +93,18 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             layout="fill"
             objectFit="cover"
             priority
-            className="z-0" // Ensure image is behind the overlay
+            className="z-0 border border-orange-500" // Ensure image is behind the overlay
           />
           {/* Overlay for Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10 border border-yellow-500"></div>
 
           {/* Text Content Overlay */}
-          <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white max-w-3xl">
+          <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white max-w-3xl border border-lime-500">
              {/* Category Removed */}
              {/* Title */}
-             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3">{caseStudy.title}</h1>
+             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-3 border border-green-500">{caseStudy.title}</h1>
              {/* Subtitle (Requires Sanity Field: 'subtitle') */}
-             <p className="text-lg md:text-xl text-neutral-200">{caseStudy.subtitle || 'Placeholder subtitle describing the project.'}</p>
+             <p className="text-lg md:text-xl text-neutral-200 border border-teal-500">{caseStudy.subtitle || 'Placeholder subtitle describing the project.'}</p>
              {/* Removed Summary */}
              {/* Date and Tags could be moved elsewhere */}
           </div>
@@ -111,15 +112,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
       )}
 
       {/* Constrained Content Area */}
-      <article className="max-w-4xl mx-auto px-4 py-8 space-y-8"> {/* Removed top padding */}
+      <article className="space-y-8 border border-cyan-500"> {/* Removed max-w-4xl mx-auto, Removed padding comment */}
 
         {/* Metrics */}
         {caseStudy.metrics && caseStudy.metrics.length > 0 && (
-          <section className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <section className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-lg grid grid-cols-2 md:grid-cols-4 gap-4 text-center border border-blue-500">
             {caseStudy.metrics.map((metric) => (
-              <div key={metric._key}>
-                <p className="text-2xl font-bold text-primary">{metric.value}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">{metric.label}</p>
+              <div key={metric._key} className="border border-indigo-500">
+                <p className="text-2xl font-bold text-primary border border-violet-500">{metric.value}</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 border border-purple-500">{metric.label}</p>
               </div>
             ))}
           </section>
@@ -127,44 +128,49 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Sections */}
         {caseStudy.sections && caseStudy.sections.length > 0 && (
-          <div className="space-y-12 md:space-y-16"> {/* Increased spacing between sections */}
+          <div className="space-y-12 md:space-y-16 border border-fuchsia-500"> {/* Increased spacing between sections */}
             {caseStudy.sections.map((section, index) => (
-              <section key={section._key} className="space-y-4">
+              <section key={section._key} className="space-y-4 border border-pink-500">
                 {/* Section Title - Optional: Hide if you want title within the text column */}
                 {/* <h2 className="text-3xl font-semibold border-b pb-2 mb-4">{section.title}</h2> */}
   
                 {section.image ? (
                   // Two-column layout (Image + Text)
                   <div
-                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-start ${
+                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-start border border-rose-500 ${
                       // Use layout field if present, otherwise alternate based on index (even index = text left, odd index = image left)
                       (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'md:flex-row-reverse' : ''
                     }`}
                   >
                     {/* Text Content Column */}
-                    <div className="w-full md:w-1/2 flex-shrink-0">
+                    <div className={`w-full md:w-1/2 flex-shrink-0 border border-red-600 ${
+                      // Add padding based on text position: pl if text is left, pr if text is right
+                      (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0))
+                        ? 'md:pr-8' // Text is on the right (image left), add right padding
+                        : 'md:pl-8' // Text is on the left (image right), add left padding
+                    }`}>
                        {/* Render Title within text column */}
-                       <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
-                       <div className="prose prose-lg dark:prose-invert max-w-none">
+                       <h2 className="text-3xl font-semibold mb-4 border border-orange-600">{section.title}</h2>
+                       <div className="prose prose-lg dark:prose-invert max-w-none border border-yellow-600">
                          <PortableText value={section.content} />
                        </div>
                     </div>
                     {/* Image Column */}
-                    <div className="w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0">
+                    <div className="w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 border border-lime-600 flex justify-center"> {/* Added flex justify-center */}
                       <Image
                         src={urlFor(section.image).width(800).height(600).auto('format').quality(80).url()}
                         alt={section.title || 'Section image'}
                         width={800}
                         height={600}
-                        className="rounded-lg object-cover shadow-md aspect-[4/3]" // Added aspect ratio
+                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3] border border-green-600" // Added mx-auto and moved existing classes here
                       />
                     </div>
                   </div>
                 ) : (
                   // Text-only layout
-                  <div>
-                     <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
-                     <div className="prose prose-lg dark:prose-invert max-w-none">
+                  <div className="border border-teal-600">
+                     <h2 className="text-3xl font-semibold mb-4 border border-cyan-600">{section.title}</h2>
+                     <div className="prose prose-lg dark:prose-invert max-w-none border border-blue-600">
                        <PortableText value={section.content} />
                      </div>
                   </div>
@@ -176,11 +182,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   
         {/* Fallback if no sections */}
         {(!caseStudy.sections || caseStudy.sections.length === 0) && (
-           <p className="text-neutral-500">Content coming soon...</p>
+           <p className="text-neutral-500 border border-indigo-600">Content coming soon...</p>
         )}
 
       </article>
-    </> // Close Fragment
+    </> {/* Close Fragment */}
+    </div> // Close negative margin wrapper
   ); // Close the return statement parenthesis
 }
 

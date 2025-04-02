@@ -34,9 +34,12 @@ export default function RootLayout({
             {/* Render the extracted AppSidebar component */}
             <AppSidebar />
 
-            {/* Main content area - Added pb-12 for fixed footer */}
-            <main className="flex flex-col flex-1 p-8 md:p-16 pb-12 bg-[url('/background.svg')] bg-cover bg-center bg-no-repeat md:ml-[140px]"> {/* Adjusted margin for wider sidebar */}
-              {children}
+            {/* Main content area - Padding moved to inner div, Added pb-12 for fixed footer */}
+            <main className="flex flex-col flex-1 pb-12 bg-[url('/background.svg')] bg-cover bg-center bg-no-repeat md:ml-[140px]"> {/* Adjusted margin for wider sidebar, removed p-8 md:p-16 */}
+              {/* Default padded wrapper */}
+              <div className="p-8 md:p-16 flex-1"> {/* Added flex-1 to allow content to grow */}
+                {children}
+              </div>
             </main>
           </div> {/* Closing tag for the main flex container */}
         </SidebarProvider> {/* Closing tag for SidebarProvider */}
