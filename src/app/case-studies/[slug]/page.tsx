@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"; // Added Carousel imports
+import { ContactForm } from '@/components/contact-form'; // Import the contact form (named import)
 // Define the expected structure of a Case Study from Sanity
 // Adjust based on your actual schema in sanity-schema.md
 interface SanityCaseStudy {
@@ -324,6 +325,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         )}
 
       </article>
+
+      {/* Add Contact Form Section */}
+      <section className="py-12 md:py-16 px-8"> {/* Add padding consistent with article */}
+        <h2 className="text-3xl font-semibold text-center mb-8">Get In Touch</h2>
+        <div className="max-w-2xl mx-auto"> {/* Center the form */}
+          <ContactForm />
+        </div>
+      </section>
+
     </> {/* Close Fragment */}
     </div> // Close negative margin wrapper
   ); // Close the return statement parenthesis

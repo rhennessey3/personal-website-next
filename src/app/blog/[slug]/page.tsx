@@ -3,6 +3,7 @@ import { PortableText } from "@portabletext/react";
 import imageUrlBuilder from '@sanity/image-url';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { ContactForm } from '@/components/contact-form'; // Import the contact form
 
 // Define the expected structure of a Blog Post from Sanity
 // Adjust based on your actual schema in sanity-schema.md
@@ -58,7 +59,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const displayDate = blogPost.publishedDate || blogPost._createdAt;
 
   return (
-    <article className="max-w-3xl mx-auto py-8 px-4 space-y-8">
+    <> {/* Add Fragment wrapper */}
+      <article className="max-w-3xl mx-auto py-8 px-4 space-y-8">
       {/* Header */}
       <header className="border-b pb-6 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{blogPost.title}</h1>
@@ -101,7 +103,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       )}
 
     </article>
-  );
+
+    {/* Add Contact Form Section */}
+    <section className="max-w-3xl mx-auto py-12 md:py-16 px-4"> {/* Consistent padding/width */}
+      <h2 className="text-3xl font-semibold text-center mb-8">Get In Touch</h2>
+      <div className="max-w-2xl mx-auto"> {/* Center the form */}
+        <ContactForm />
+      </div>
+    </section>
+    </> // Close Fragment wrapper
+  ); // Close the return statement parenthesis
 }
 
 // Generate static paths for SSG
