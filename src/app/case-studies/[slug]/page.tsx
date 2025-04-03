@@ -3,7 +3,13 @@ import { PortableText } from "@portabletext/react";
 import imageUrlBuilder from '@sanity/image-url';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"; // Added Carousel imports
 // Define the expected structure of a Case Study from Sanity
 // Adjust based on your actual schema in sanity-schema.md
 interface SanityCaseStudy {
@@ -20,10 +26,26 @@ interface SanityCaseStudy {
     _key: string;
     title: string;
     sectionType: string; // May not be needed if layout handles visual distinction
-    content: any[]; // Portable Text content
+    content?: any[]; // Portable Text content (optional for some layouts)
     image?: { asset: { _ref: string } }; // Optional section image
-    layout?: 'textLeft' | 'imageLeft' | 'twoColumnText'; // Added twoColumnText layout
-    contentRight?: any[]; // Added field for second text column
+    layout?: 'textLeft' | 'imageLeft' | 'twoColumnText' | 'threeColumnSlider' | 'twoColumnTextRowsImageRight'; // Added new layout
+    // Fields for 'twoColumnText'
+    contentRight?: any[];
+    // Fields for 'threeColumnSlider'
+    sliderItems?: {
+      _key: string;
+      image?: { asset: { _ref: string } };
+      subhead?: string;
+      bodyText?: any[];
+    }[];
+    // Fields for 'twoColumnTextRowsImageRight'
+    mainHeading?: string;
+    leftColumnItems?: {
+      _key: string;
+      subhead?: string;
+      bodyText?: any[];
+    }[];
+    rightColumnImage?: { asset: { _ref: string } };
   }[];
   metrics?: { // Assuming metrics are objects within an array
     _key: string;
@@ -46,12 +68,28 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
   "tags": tags[]->{name}, // Fetch referenced tag names
   sections[]{
     _key,
-    title,
+    title, // Keep title for potential fallback or other uses
     sectionType,
     content,
-    image, // Fetch section image
-    layout, // Fetch layout preference
-    contentRight // Fetch second text column content
+    image,
+    layout,
+    // twoColumnText fields
+    contentRight,
+    // threeColumnSlider fields
+    sliderItems[]{
+      _key,
+      image,
+      subhead,
+      bodyText
+    },
+    // twoColumnTextRowsImageRight fields
+    mainHeading,
+    leftColumnItems[]{
+      _key,
+      subhead,
+      bodyText
+    },
+    rightColumnImage
   },
   metrics[]{_key, label, value}
 }`;
@@ -184,6 +222,85 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                              <PortableText value={section.contentRight} />
                            </div>
                          )}
+                      </div>
+                    </div>
+                  </div>
+                ) : section.layout === 'threeColumnSlider' ? (
+                  // --- Three Column Slider Layout ---
+                  <div> {/* Slider Container */}
+                    <h2 className="text-3xl font-semibold mb-6 text-center">{section.title}</h2> {/* Centered Title */}
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true, // Optional: make the carousel loop
+                      }}
+                      className="w-full" // Adjust width as needed
+                    >
+                      <CarouselContent className="-ml-4"> {/* Negative margin for spacing */}
+                        {section.sliderItems && section.sliderItems.map((item) => (
+                          <CarouselItem key={item._key} className="md:basis-1/2 lg:basis-1/3 pl-4"> {/* Adjust basis for columns, add padding */}
+                            <div className="p-1 h-full"> {/* Wrapper for potential card styling */}
+                              <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"> {/* Basic card styling */}
+                                {item.image && (
+                                  <div className="relative w-full aspect-video"> {/* Image container */}
+                                    <Image
+                                      src={urlFor(item.image).width(400).height(225).auto('format').quality(75).url()}
+                                      alt={item.subhead || 'Slider image'}
+                                      layout="fill"
+                                      objectFit="cover"
+                                      className="rounded-t-lg"
+                                    />
+                                  </div>
+                                )}
+                                <div className="p-4 flex flex-col flex-grow"> {/* Text content area */}
+                                  {item.subhead && <h3 className="text-lg font-semibold mb-2">{item.subhead}</h3>}
+                                  {item.bodyText && (
+                                    <div className="prose prose-sm dark:prose-invert max-w-none text-sm flex-grow"> {/* Smaller prose */}
+                                      <PortableText value={item.bodyText} />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" /> {/* Position outside content area on larger screens */}
+                      <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" /> {/* Position outside content area on larger screens */}
+                    </Carousel>
+                  </div>
+                ) : section.layout === 'twoColumnTextRowsImageRight' ? (
+                  // --- Two Column: Text Rows (Left) + Image (Right) ---
+                  <div> {/* Section Container */}
+                    {/* Main Heading */}
+                    {section.mainHeading && (
+                      <h2 className="text-3xl font-semibold mb-6 text-center">{section.mainHeading}</h2>
+                    )}
+                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start"> {/* Columns Container */}
+                      {/* Left Column (Text Rows) */}
+                      <div className="w-full md:w-1/2 flex-shrink-0 space-y-6"> {/* Added space-y-6 */}
+                        {section.leftColumnItems && section.leftColumnItems.map((item) => (
+                          <div key={item._key}>
+                            {item.subhead && <h3 className="text-xl font-semibold mb-2">{item.subhead}</h3>}
+                            {item.bodyText && (
+                              <div className="prose prose-base dark:prose-invert max-w-none"> {/* Adjusted prose size */}
+                                <PortableText value={item.bodyText} />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Right Column (Image) */}
+                      <div className="w-full md:w-1/2 flex-shrink-0 flex justify-center items-center mt-6 md:mt-0">
+                        {section.rightColumnImage && (
+                          <Image
+                            src={urlFor(section.rightColumnImage).width(600).height(450).auto('format').quality(80).url()}
+                            alt={section.mainHeading || 'Section image'} // Use mainHeading as alt text fallback
+                            width={600}
+                            height={450}
+                            className="rounded-lg object-contain shadow-md max-h-[450px]" // Use object-contain and set max-height
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
