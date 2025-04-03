@@ -5,10 +5,11 @@ import Link from "next/link";
 import { SidebarLink } from "@/components/ui/sidebar"; // Assuming SidebarLink is still exported or moved
 import { siteConfig } from "@/config/site";
 import RickHennesseyLogo from '@/assets/rickhennesseylogo.svg';
+// Removed individual icon imports, will use siteConfig
 
 export function DesktopNavContent() {
   return (
-    <>
+    <div className="flex flex-col h-full"> {/* Removed debugging borders */}
       {/* Profile Header */}
       <div className="flex flex-col items-center pt-2 pb-4 px-4 border-b-[0.5px] border-neutral-800">
         <Link href="/" aria-label="Homepage">
@@ -16,37 +17,43 @@ export function DesktopNavContent() {
             <RickHennesseyLogo />
           </div>
         </Link>
-        <div className="text-center w-[200px] leading-tight">
-          <div className="text-xs text-neutral-500 px-[5px]">{siteConfig.title}</div>
-        </div>
+        {/* Removed title line as requested */}
       </div>
 
-      {/* Main Navigation Section (Grows) */}
-      <div className="mt-8 flex flex-1 flex-col gap-2">
+      {/* Main Navigation Section */}
+      <div className="mt-8 flex flex-col gap-2">
         {siteConfig.sidebarNav.map((item, idx) => (
-          // Assuming SidebarLink handles its own base styling (padding, etc.)
           <SidebarLink key={idx} link={item} />
         ))}
-        {/* No "Read Resume" link on desktop */}
       </div>
-
-      {/* Socials Section (Pushed to bottom by flex-1 above) */}
-      <div className="pt-4 pb-4 flex items-center">
-        <div className="flex flex-row items-center justify-center px-4 w-full gap-x-6">
+      
+      {/* Spacer to push content down */}
+      <div className="flex-grow"></div>
+      
+      {/* Social Links Container - Positioned to align with Product Strategy card */}
+      <div className="py-4 mt-8"> {/* Removed yellow background and debugging borders */}
+        <div className="flex flex-col items-center justify-center gap-y-3 pb-[100px]"> {/* Removed debugging borders */}
+          {/* Social links */}
           {siteConfig.socialLinks.map((item, idx) => (
             <Link
               key={idx}
               href={item.href}
-              target="_blank"
+              target={item.href === "#" ? "_self" : "_blank"}
               rel="noopener noreferrer"
-              className="text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+              className="hover:opacity-80 transition-opacity flex items-center justify-center"
               aria-label={item.label}
             >
-              {item.icon}
+              <img
+                src={`/${item.label.toLowerCase()}.svg`}
+                alt={item.label}
+                className="h-6 w-6"
+                width={24}
+                height={24}
+              />
             </Link>
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext, useEffect } from "react"; // Import useEffect
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation"; // Import usePathname
+import { usePathname, useSearchParams } from "next/navigation"; // Import usePathname and useSearchParams
 // Import icons from @tabler/icons-react again
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import RickHennesseyLogo from '@/assets/rickhennesseylogo.svg'; // Import desktop logo
@@ -100,7 +100,7 @@ const DesktopSidebar = ({
     <>
       <div
         className={cn(
-          "h-screen px-4 py-4 flex flex-col bg-white dark:bg-neutral-950 w-[120px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Removed red border
+          "h-screen px-4 py-4 flex flex-col bg-white dark:bg-neutral-950 w-[140px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Increased width from 120px to 140px
           className
         )}
         {...props} /* Removed animate prop */
@@ -143,13 +143,14 @@ const MobileSidebar = ({
 }: Omit<React.ComponentProps<"div">, "children">) => { // Use Omit to remove children from type
   const { open, setOpen } = useSidebar();
   const pathname = usePathname(); // Get current pathname
-  // Effect to close sidebar on route change
+  const searchParams = useSearchParams(); // Get search params
+  // Effect to close sidebar on route change (pathname or search params)
   useEffect(() => {
     if (open) {
       setOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]); // Re-run effect when pathname changes
+  }, [pathname, searchParams]); // Re-run effect when pathname or searchParams changes
 
   return (
     <>

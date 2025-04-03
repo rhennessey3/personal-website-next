@@ -19,9 +19,7 @@ export function MobileNavContent() {
               <RickHennesseyLogo />
             </div>
           </Link>
-          <div className="text-center w-[200px] leading-tight">
-            <div className="text-xs text-neutral-500 px-[5px]">{siteConfig.title}</div>
-          </div>
+          {/* Removed title line as requested */}
         </div>
 
         {/* Main Navigation */}

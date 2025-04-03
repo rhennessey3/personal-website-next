@@ -29,7 +29,7 @@ export function HeroSection({ profileImage, loadingImage, urlFor }: HeroSectionP
           <div className="flex gap-4 pt-4">
             <Spotlight className="rounded-lg">
               <Button asChild size="lg">
-                <Link href="/thinking?filter=case-study">View My Work</Link>
+                <Link href="/thinking?filter=case-studies">View My Work</Link>
               </Button>
             </Spotlight>
             <Spotlight className="rounded-lg">

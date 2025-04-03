@@ -3,6 +3,7 @@ import {
   IconHome,
   IconNotebook,
   IconUser,
+  IconBriefcase, // Added IconBriefcase for "My Work" link
   // IconBrandLinkedin removed
   // IconBrandInstagram removed
   // IconBrandSpotify removed
@@ -28,7 +29,8 @@ export const siteConfig = {
   resumeUrl: "/resume", // Updated resume link to internal page
   sidebarNav: [
     // { href: "/", label: "Home", icon: <IconHome className="h-4 w-4" /> }, // Removed Home link
-    { href: "/thinking", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> }, // Keep nav icons small
+    { href: "/thinking?filter=case-studies", label: "My Work", icon: <IconBriefcase className="h-4 w-4" /> }, // Added filter parameter
+    { href: "/thinking?filter=blog-post", label: "Thinking", icon: <IconNotebook className="h-4 w-4" /> }, // Added filter parameter
     { href: "/about", label: "About", icon: <IconUser className="h-4 w-4" /> }, // Keep nav icons small
   ] as NavItem[], // Assert type for stricter checking
   socialLinks: [

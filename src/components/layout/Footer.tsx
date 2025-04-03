@@ -9,7 +9,7 @@ export function Footer() {
     // Removed px-8, kept py-6
     <footer className="fixed bottom-0 left-0 w-full bg-neutral-950 text-neutral-400 py-6 text-sm z-10"> {/* Removed red border */}
       {/* Kept flex layout, removed container/mx-auto/gap */}
-      <div className="flex flex-row justify-between items-center px-8"> {/* Changed flex-col to flex-row, added justify-between, added px-8 */}
+      <div className="flex flex-row justify-between items-center pr-8"> {/* Changed px-8 to pr-8 to remove left padding */}
         {/* Left Div: Read Resume Button - Width matches sidebar, button centered inside */}
         <div className="flex justify-start"> {/* Removed fixed width and justify-center */}
           {/* Wrapper for Regular button (md and above) */}
@@ -22,7 +22,8 @@ export function Footer() {
                 // Removed responsive classes from here
                 buttonVariants({ variant: "default", size: "default" }),
                 "w-auto justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-300",
-                "!bg-neutral-100 !text-black"
+                "!bg-neutral-100 !text-black",
+                "scale-85 transform" /* Added scale-85 to make button 15% smaller */
               )}
             >
               Read Resume

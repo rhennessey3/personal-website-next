@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'; // Added Suspense
 import Link from "next/link";
-import { useSearchParams } from 'next/navigation'; // Import useSearchParams
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'; // Import useRouter and usePathname
 import { client } from "@/sanity/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,18 +33,23 @@ const BLOG_POSTS_QUERY = `*[_type == "blogPost" && defined(slug.current)]{ _id, 
 
 // Component to handle reading search params and rendering the page content
 function ThinkingPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialFilterParam = searchParams.get('filter');
 
   // Determine initial filter state based on URL parameter
-  const getInitialFilter = (): PostType => {
-    if (initialFilterParam === 'case-study' || initialFilterParam === 'blog-post') {
-      return initialFilterParam;
+  // Determine filter state based on URL parameter
+  const getFilterFromParams = (): PostType => {
+    const currentFilterParam = searchParams.get('filter');
+    if (currentFilterParam === 'case-studies') {
+      return 'case-study';
+    } else if (currentFilterParam === 'blog-post') {
+      return 'blog-post';
     }
     return 'all';
   };
 
-  const [activeFilter, setActiveFilter] = useState<PostType>(getInitialFilter);
+  // Removed activeFilter state. Filter will be derived directly from searchParams.
   const [combinedPosts, setCombinedPosts] = useState<CombinedPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -105,12 +110,29 @@ function ThinkingPageContent() {
     };
 
     fetchData();
-  }, []); // Fetch once on mount
+  }, []); // Fetch data once on mount
 
-  // Filter posts based on active filter
-  const filteredPosts = activeFilter === 'all'
+  // Removed useEffect that updated activeFilter state.
+
+  // Determine the current filter directly from searchParams for rendering
+  const currentFilter = getFilterFromParams();
+
+  // Function to handle filter button clicks and update URL
+  const handleFilterChange = (filter: PostType) => {
+    let newUrl = pathname; // Start with the base path (e.g., /thinking)
+    if (filter === 'case-study') {
+      newUrl += '?filter=case-studies';
+    } else if (filter === 'blog-post') {
+      newUrl += '?filter=blog-post';
+    }
+    // For 'all', no query parameter is needed
+    router.push(newUrl, { scroll: false }); // Update URL without scrolling to top
+  };
+
+  // Filter posts based on the current filter derived directly from URL params
+  const filteredPosts = currentFilter === 'all'
     ? combinedPosts
-    : combinedPosts.filter(post => post.type === activeFilter);
+    : combinedPosts.filter(post => post.type === currentFilter);
 
     // Loading state UI (can be reused or customized)
     const LoadingIndicator = () => (
@@ -149,23 +171,23 @@ function ThinkingPageContent() {
 
         <div className="flex justify-center gap-4 mb-8">
           <Button
-            variant={activeFilter === 'all' ? "default" : "outline"}
+            variant={currentFilter === 'all' ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => setActiveFilter('all')}
+            onClick={() => handleFilterChange('all')}
           >
             All
           </Button>
           <Button
-            variant={activeFilter === 'case-study' ? "default" : "outline"}
+            variant={currentFilter === 'case-study' ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => setActiveFilter('case-study')}
+            onClick={() => handleFilterChange('case-study')}
           >
             Case Studies
           </Button>
           <Button
-            variant={activeFilter === 'blog-post' ? "default" : "outline"}
+            variant={currentFilter === 'blog-post' ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => setActiveFilter('blog-post')}
+            onClick={() => handleFilterChange('blog-post')}
           >
             Blog Posts
           </Button>
@@ -207,7 +229,7 @@ function ThinkingPageContent() {
           </div>
         ) : (
           <p className="text-center text-neutral-500 dark:text-neutral-400 py-12">
-            No {activeFilter !== 'all' ? activeFilter.replace('-', ' ') + 's' : 'posts'} found.
+            No {currentFilter !== 'all' ? currentFilter.replace('-', ' ') + 's' : 'posts'} found.
           </p>
         )}
       </section>
