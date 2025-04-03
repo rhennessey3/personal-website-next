@@ -8,6 +8,9 @@ import { usePathname } from "next/navigation"; // Import usePathname
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import RickHennesseyLogo from '@/assets/rickhennesseylogo.svg'; // Import desktop logo
 import MobileRhLogo from '@/assets/mobielrh.svg'; // Import mobile logo
+// Import new content components
+import { DesktopNavContent } from "@/components/layout/DesktopNavContent";
+import { MobileNavContent } from "@/components/layout/MobileNavContent";
 
 interface Links {
   label: string;
@@ -56,7 +59,8 @@ const SidebarProvider = ({
   );
 };
 
-const SidebarBody = (props: React.ComponentProps<"div">) => { // Changed prop type
+// SidebarBody no longer needs props as it doesn't pass them down
+const SidebarBody: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -73,35 +77,35 @@ const SidebarBody = (props: React.ComponentProps<"div">) => { // Changed prop ty
   }
 
   return (
-    <>
-      {isMobile ? (
-        <>
-          <MobileHeader />
-          <MobileSidebar {...props} />
-        </>
-      ) : (
-        <DesktopSidebar {...props} />
-      )}
-    </>
-  );
+     <>
+       {isMobile ? (
+         <div> {/* Use div instead of fragment */}
+           <MobileHeader />
+           <MobileSidebar />
+         </div>
+       ) : (
+         <DesktopSidebar />
+       )}
+     </>
+   );
 };
 
 const DesktopSidebar = ({
   className,
-  children,
+  // Removed children prop
   ...props
-}: React.ComponentProps<"div">) => {
+}: Omit<React.ComponentProps<"div">, "children">) => { // Use Omit to remove children from type
   const { open, setOpen, animate } = useSidebar();
   return (
     <>
       <div
         className={cn(
-          "h-screen px-4 py-4 flex flex-col bg-white dark:bg-neutral-950 w-[120px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0 border border-red-500", // Removed hidden md:flex, Added red border
+          "h-screen px-4 py-4 flex flex-col bg-white dark:bg-neutral-950 w-[120px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Removed red border
           className
         )}
         {...props} /* Removed animate prop */
       >
-        {children}
+        <DesktopNavContent /> {/* Render specific content */}
       </div>
     </>
   );
@@ -112,7 +116,7 @@ const MobileHeader = ({ className, ...props }: React.HTMLAttributes<HTMLElement>
   return (
     <div
       className={cn(
-        "h-10 px-4 py-4 flex flex-row items-center bg-neutral-100 dark:bg-neutral-800 w-full border border-red-500", // Removed md:hidden and justify-between, Added red border
+        "h-10 px-4 py-4 flex flex-row items-center bg-neutral-100 dark:bg-neutral-800 w-full", // Removed red border
         className
       )}
       {...props}
@@ -134,9 +138,9 @@ const MobileHeader = ({ className, ...props }: React.HTMLAttributes<HTMLElement>
 
 const MobileSidebar = ({
   className,
-  children,
+  // Removed children prop
   ...props
-}: React.ComponentProps<"div">) => {
+}: Omit<React.ComponentProps<"div">, "children">) => { // Use Omit to remove children from type
   const { open, setOpen } = useSidebar();
   const pathname = usePathname(); // Get current pathname
   // Effect to close sidebar on route change
@@ -160,7 +164,7 @@ const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between border border-red-500", // Added red border
+                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between", // Removed red border
                 className
               )}
             >
@@ -171,7 +175,7 @@ const MobileSidebar = ({
                 {/* Use Tabler IconX icon */}
                 <IconX />
               </div>
-              {children}
+              <MobileNavContent /> {/* Render specific content */}
             </motion.div>
           )}
         </AnimatePresence>
@@ -194,7 +198,7 @@ const SidebarLink = ({
     <Link
       href={link.href}
       className={cn(
-        "flex items-center justify-center group/sidebar py-2 border border-red-500", // Changed justify-start to justify-center, Added red border
+        "flex items-center justify-center group/sidebar py-2", // Removed red border
         className
       )}
       {...props} // Removed onClick handler
