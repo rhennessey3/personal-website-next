@@ -12,20 +12,41 @@ export function Footer() {
       <div className="flex flex-row justify-between items-center px-8"> {/* Changed flex-col to flex-row, added justify-between, added px-8 */}
         {/* Left Div: Read Resume Button - Width matches sidebar, button centered inside */}
         <div className="flex justify-start"> {/* Removed fixed width and justify-center */}
-          <a
-            href={siteConfig.resumeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              buttonVariants({ variant: "default", size: "default" }), // Apply base button styles
-              // Apply inverted color styles (white bg, black text)
-              "w-auto justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-300", // Inverted colors
-              // Remove original default styles that conflict
-              "!bg-neutral-100 !text-black" // Use !important temporarily if needed, or refine base variant application
-            )}
-          >
-            Read Resume
-          </a>
+          {/* Wrapper for Regular button (md and above) */}
+          <div className="hidden md:block">
+            <a
+              href={siteConfig.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                // Removed responsive classes from here
+                buttonVariants({ variant: "default", size: "default" }),
+                "w-auto justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-300",
+                "!bg-neutral-100 !text-black"
+              )}
+            >
+              Read Resume
+            </a>
+          </div>
+          
+          {/* Wrapper for Compact button (below md) */}
+          <div className="block md:hidden">
+            <a
+              href={siteConfig.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                // Removed responsive classes, added inline-flex for button layout
+                "inline-flex",
+                "h-6 px-2 py-0 text-xs", // Very small button
+                "items-center justify-center whitespace-nowrap rounded-full",
+                "font-medium transition-colors",
+                "bg-neutral-100 text-black hover:bg-neutral-300"
+              )}
+            >
+              Resume
+            </a>
+          </div>
         </div>
 
         {/* Right Div: Signature SVG - Pushed to the right, added padding right */}

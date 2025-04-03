@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans, GeistMono } from 'geist/font';
 import "./globals.css";
-import { MobileHeader, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar"; // Removed MobileHeader import
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Footer } from "@/components/layout/Footer"; // Import the Footer component
 
@@ -26,8 +26,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased min-h-screen bg-neutral-50 dark:bg-neutral-900 flex flex-col`}
       >
         <SidebarProvider>
-          {/* Render Mobile Header at the top */}
-          <MobileHeader />
+          {/* MobileHeader is now rendered conditionally within SidebarBody */}
 
           {/* Make this container grow to fill remaining vertical space */}
           <div className="flex flex-1">

@@ -56,11 +56,32 @@ const SidebarProvider = ({
   );
 };
 
-const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+const SidebarBody = (props: React.ComponentProps<"div">) => { // Changed prop type
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 767px)").matches);
+    checkMobile(); // Initial check
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  if (!isMounted) {
+    return null; // Avoid hydration mismatch
+  }
+
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      {isMobile ? (
+        <>
+          <MobileHeader />
+          <MobileSidebar {...props} />
+        </>
+      ) : (
+        <DesktopSidebar {...props} />
+      )}
     </>
   );
 };
@@ -69,22 +90,19 @@ const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: React.ComponentProps<"div">) => {
   const { open, setOpen, animate } = useSidebar();
   return (
     <>
-      <motion.div
+      <div
         className={cn(
-          "h-screen px-4 py-4 hidden md:flex flex-col bg-white dark:bg-neutral-950 w-[120px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0", // Increased base width by 20px
+          "h-screen px-4 py-4 flex flex-col bg-white dark:bg-neutral-950 w-[120px] border-r border-neutral-200 dark:border-neutral-800 fixed top-0 left-0 border border-red-500", // Removed hidden md:flex, Added red border
           className
         )}
-        animate={{
-          width: "140px", // Increased animated width by 20px
-        }}
-        {...props}
+        {...props} /* Removed animate prop */
       >
         {children}
-      </motion.div>
+      </div>
     </>
   );
 };
@@ -94,7 +112,7 @@ const MobileHeader = ({ className, ...props }: React.HTMLAttributes<HTMLElement>
   return (
     <div
       className={cn(
-        "h-10 px-4 py-4 flex flex-row md:hidden items-center bg-neutral-100 dark:bg-neutral-800 w-full", // Removed justify-between
+        "h-10 px-4 py-4 flex flex-row items-center bg-neutral-100 dark:bg-neutral-800 w-full border border-red-500", // Removed md:hidden and justify-between, Added red border
         className
       )}
       {...props}
@@ -142,7 +160,7 @@ const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between border border-red-500", // Added red border
                 className
               )}
             >
@@ -176,7 +194,7 @@ const SidebarLink = ({
     <Link
       href={link.href}
       className={cn(
-        "flex items-center justify-center group/sidebar py-2", // Changed justify-start to justify-center
+        "flex items-center justify-center group/sidebar py-2 border border-red-500", // Changed justify-start to justify-center, Added red border
         className
       )}
       {...props} // Removed onClick handler
