@@ -7,7 +7,15 @@ const config = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
 	],
-  prefix: "",
+	safelist: [
+	  'bg-rh-black',
+	  'text-rh-white',
+	  'bg-rh-grey',
+	  'text-rh-black',
+	  'bg-rh-white',
+	  // text-rh-black is already covered by grey/white, but explicit doesn't hurt
+	],
+	prefix: "",
   theme: {
     container: {
       center: true,
@@ -33,7 +41,11 @@ const config = {
         // Removed custom font family
       },
       // Add other theme extensions if needed (colors, keyframes, etc.)
-      // colors: { ... },
+      colors: {
+        'rh-black': '#151515',
+        'rh-grey': '#F0F0F0',
+        'rh-white': '#FCFCFC',
+      },
       // keyframes: { ... },
       // animation: { ... },
     },

@@ -102,6 +102,7 @@ const groupSkillsByCategory = (skills: SkillSanity[] = []): Record<string, Skill
 
 export default function ResumePage() { // Renamed function
   const [profileData, setProfileData] = useState<ProfileSanity | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null); // State for resume URL
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -110,8 +111,9 @@ export default function ResumePage() { // Renamed function
       setLoading(true);
       setError(null);
       try {
-        // GROQ query to fetch the first profile document and its referenced data
-        const query = `*[_type == "profile"][0] {
+        // GROQ query to fetch profile and site settings (including resume URL)
+        const query = `{
+          "profile": *[_type == "profile"][0] {
           _id,
           firstName,
           lastName,
@@ -142,10 +144,17 @@ export default function ResumePage() { // Renamed function
             category,
             name,
             proficiency
-          }
+          } // End skills projection
+        }, // End profile projection
+        "settings": *[_type == "siteSettings" && _id == "siteSettings"][0] {
+          "resumeUrl": resumeFile.asset->url
+        } // End settings projection
         }`;
-        const data: ProfileSanity = await client.fetch(query);
-        setProfileData(data);
+        // Fetch both profile and settings data
+        const { profile, settings } = await client.fetch<{ profile: ProfileSanity, settings: { resumeUrl?: string } }>(query);
+
+        setProfileData(profile);
+        setResumeUrl(settings?.resumeUrl || null); // Set resume URL state
       } catch (err) {
         console.error("Failed to fetch profile data:", err);
         setError(err instanceof Error ? err : new Error('An unknown error occurred'));
@@ -209,8 +218,16 @@ export default function ResumePage() { // Renamed function
             {profileData.bio}
           </p>
           <div className="flex gap-4 pt-2">
-            {/* TODO: Implement Download Resume functionality */}
-            <Button disabled>Download Resume</Button>
+            {/* Download Resume Button/Link */}
+            {resumeUrl ? (
+              <Button asChild>
+                <a href={resumeUrl} download="RichardHennessey_Resume.pdf"> {/* Add download attribute */}
+                  Download Resume
+                </a>
+              </Button>
+            ) : (
+              <Button disabled>Download Resume</Button> // Keep disabled if URL not loaded/found
+            )}
             {/* TODO: Implement smooth scroll or link to contact section */}
             <Button variant="outline">Contact Me</Button>
           </div>

@@ -11,8 +11,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"; // Added Carousel imports
 import { ContactForm } from '@/components/contact-form'; // Import the contact form (named import)
+
 // Define the expected structure of a Case Study from Sanity
-// Adjust based on your actual schema in sanity-schema.md
 interface SanityCaseStudy {
   _id: string;
   title: string;
@@ -47,6 +47,7 @@ interface SanityCaseStudy {
       bodyText?: any[];
     }[];
     rightColumnImage?: { asset: { _ref: string } };
+    backgroundColor?: 'rh-black' | 'rh-grey' | 'rh-white'; // Added background color field
   }[];
   metrics?: { // Assuming metrics are objects within an array
     _key: string;
@@ -90,7 +91,8 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
       subhead,
       bodyText
     },
-    rightColumnImage
+    rightColumnImage,
+    backgroundColor // Fetch background color
   },
   metrics[]{_key, label, value}
 }`;
@@ -153,7 +155,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
       )}
 
       {/* Constrained Content Area */}
-      <article className="space-y-8 px-8"> {/* Added px-8 */} {/* Removed max-w-4xl mx-auto, Removed padding comment */}
+      <article className="space-y-8"> {/* Removed px-8 */} {/* Removed max-w-4xl mx-auto, Removed padding comment */}
 
         {/* Metrics */}
         {caseStudy.metrics && caseStudy.metrics.length > 0 && (
@@ -169,81 +171,91 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Sections */}
         {caseStudy.sections && caseStudy.sections.length > 0 && (
-          <div className="space-y-12 md:space-y-16"> {/* Increased spacing between sections */}
-            {caseStudy.sections.map((section, index) => (
-              <section key={section._key} className="space-y-4"> {/* Removed px-8 */}
-                {/* Section Title - Optional: Hide if you want title within the text column */}
-                {/* <h2 className="text-3xl font-semibold border-b pb-2 mb-4">{section.title}</h2> */}
-  
-                {section.image ? (
-                  // Two-column layout (Image + Text)
+          <div> {/* Removed space-y-12 md:space-y-16 */} {/* Increased spacing between sections */}
+            {caseStudy.sections.map((section, index) => {
+              // Define color mapping
+              const bgColorMap = {
+                'rh-black': 'bg-rh-black text-rh-white',
+                'rh-grey': 'bg-rh-grey text-rh-black',
+                'rh-white': 'bg-rh-white text-rh-black',
+              };
+              const colorValue = section.backgroundColor as keyof typeof bgColorMap | undefined;
+              const colorClasses = colorValue ? bgColorMap[colorValue] : '';
+              // Add padding only if a background color is applied
+              const wrapperPadding = colorValue ? 'py-8 px-8' : '';
+              // Apply background color and rounding to the outer section tag if color exists
+              const sectionWrapperClasses = colorValue ? `rounded-lg ${colorClasses}` : '';
+
+              // Determine the content to render based on layout
+              let sectionContent;
+              if (section.image) {
+                // Two-column layout (Image + Text)
+                sectionContent = (
                   <div // Image + Text Container
-                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-center pr-8 ${ // Changed px-8 to pr-8, Changed items-end to items-center
-                      // Use layout field if present, otherwise alternate based on index (even index = text left, odd index = image left)
+                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-center ${wrapperPadding} ${ // Apply padding here
                       (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'md:flex-row-reverse' : ''
                     }`}
                   >
                     {/* Text Content Column */}
-                    <div className={`w-full md:w-1/2 flex-shrink-0`}> {/* Removed conditional padding */}
-                       {/* Render Title within text column */}
+                    <div className={`w-full md:w-1/2 flex-shrink-0`}>
                        <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
-                       <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed px-8 */}
+                       <div className="prose prose-lg dark:prose-invert max-w-none">
                          <PortableText value={section.content} />
                        </div>
                     </div>
                     {/* Image Column */}
                     <div className={`w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 flex justify-center ${
-                      // Apply left padding only when the image is on the left (i.e., parent has md:flex-row-reverse)
-                      (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'pl-[45px]' : ''
-                    }`}> {/* Conditionally added pl-[45px] */}
+                      (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'pl-[45px]' : '' // Keep conditional padding for image alignment
+                    }`}>
                       <Image
                         src={urlFor(section.image).width(800).height(600).auto('format').quality(80).url()}
                         alt={section.title || 'Section image'}
                         width={800}
                         height={600}
-                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3]" // Added mx-auto and moved existing classes here
+                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3]"
                       />
                     </div>
                   </div>
-                ) : section.layout === 'twoColumnText' ? (
-                  // --- Two Column Text Layout ---
-                  <div> {/* Two Column Text Container - Removed px-8 */} {/* Wrapper for title + columns */}
-                    <h2 className="text-3xl font-semibold mb-4">{section.title}</h2> {/* Title above columns */}
-                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start"> {/* Removed px-8 */}
+                );
+              } else if (section.layout === 'twoColumnText') {
+                // --- Two Column Text Layout ---
+                sectionContent = (
+                  <div className={wrapperPadding}> {/* Apply padding here */}
+                    <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
+                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
                       {/* Left Text Column */}
-                      <div className="w-full md:w-1/2 flex-shrink-0"> {/* Removed md:pl-8 */}
-                         <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed md:pl-8 */}
+                      <div className="w-full md:w-1/2 flex-shrink-0">
+                         <div className="prose prose-lg dark:prose-invert max-w-none">
                            <PortableText value={section.content} />
                          </div>
                       </div>
                       {/* Right Text Column */}
-                      <div className="w-full md:w-1/2 flex-shrink-0"> {/* Removed md:pr-8 */}
-                         {section.contentRight && ( // Check if contentRight exists
-                           <div className="prose prose-lg dark:prose-invert max-w-none pr-[75px]"> {/* Removed md:pr-8, Changed pl to pr */}
+                      <div className="w-full md:w-1/2 flex-shrink-0">
+                         {section.contentRight && (
+                           <div className="prose prose-lg dark:prose-invert max-w-none pr-[75px]"> {/* Keep right padding */}
                              <PortableText value={section.contentRight} />
                            </div>
                          )}
                       </div>
                     </div>
                   </div>
-                ) : section.layout === 'threeColumnSlider' ? (
-                  // --- Three Column Slider Layout ---
-                  <div> {/* Slider Container */}
-                    <h2 className="text-3xl font-semibold mb-6 text-center">{section.title}</h2> {/* Centered Title */}
+                );
+              } else if (section.layout === 'threeColumnSlider') {
+                // --- Three Column Slider Layout ---
+                sectionContent = (
+                  <div className={wrapperPadding}> {/* Apply padding here */}
+                    <h2 className="text-3xl font-semibold mb-6 text-center">{section.title}</h2>
                     <Carousel
-                      opts={{
-                        align: "start",
-                        loop: true, // Optional: make the carousel loop
-                      }}
-                      className="w-full" // Adjust width as needed
+                      opts={{ align: "start", loop: true }}
+                      className="w-full"
                     >
-                      <CarouselContent className="-ml-4"> {/* Negative margin for spacing */}
+                      <CarouselContent className="-ml-4">
                         {section.sliderItems && section.sliderItems.map((item) => (
-                          <CarouselItem key={item._key} className="md:basis-1/2 lg:basis-1/3 pl-4"> {/* Adjust basis for columns, add padding */}
-                            <div className="p-1 h-full"> {/* Wrapper for potential card styling */}
-                              <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"> {/* Basic card styling */}
+                          <CarouselItem key={item._key} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                            <div className="p-1 h-full">
+                              <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
                                 {item.image && (
-                                  <div className="relative w-full aspect-video"> {/* Image container */}
+                                  <div className="relative w-full aspect-video">
                                     <Image
                                       src={urlFor(item.image).width(400).height(225).auto('format').quality(75).url()}
                                       alt={item.subhead || 'Slider image'}
@@ -253,10 +265,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                                     />
                                   </div>
                                 )}
-                                <div className="p-4 flex flex-col flex-grow"> {/* Text content area */}
+                                <div className="p-4 flex flex-col flex-grow">
                                   {item.subhead && <h3 className="text-lg font-semibold mb-2">{item.subhead}</h3>}
                                   {item.bodyText && (
-                                    <div className="prose prose-sm dark:prose-invert max-w-none text-sm flex-grow"> {/* Smaller prose */}
+                                    <div className="prose prose-sm dark:prose-invert max-w-none text-sm flex-grow">
                                       <PortableText value={item.bodyText} />
                                     </div>
                                   )}
@@ -266,25 +278,26 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                           </CarouselItem>
                         ))}
                       </CarouselContent>
-                      <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" /> {/* Position outside content area on larger screens */}
-                      <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" /> {/* Position outside content area on larger screens */}
+                      <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" />
+                      <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" />
                     </Carousel>
                   </div>
-                ) : section.layout === 'twoColumnTextRowsImageRight' ? (
-                  // --- Two Column: Text Rows (Left) + Image (Right) ---
-                  <div> {/* Section Container */}
-                    {/* Main Heading */}
+                );
+              } else if (section.layout === 'twoColumnTextRowsImageRight') {
+                // --- Two Column: Text Rows (Left) + Image (Right) ---
+                sectionContent = (
+                  <div className={wrapperPadding}> {/* Apply padding here */}
                     {section.mainHeading && (
                       <h2 className="text-3xl font-semibold mb-6 text-center">{section.mainHeading}</h2>
                     )}
-                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start"> {/* Columns Container */}
+                    <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
                       {/* Left Column (Text Rows) */}
-                      <div className="w-full md:w-1/2 flex-shrink-0 space-y-6"> {/* Added space-y-6 */}
+                      <div className="w-full md:w-1/2 flex-shrink-0 space-y-6">
                         {section.leftColumnItems && section.leftColumnItems.map((item) => (
                           <div key={item._key}>
                             {item.subhead && <h3 className="text-xl font-semibold mb-2">{item.subhead}</h3>}
                             {item.bodyText && (
-                              <div className="prose prose-base dark:prose-invert max-w-none"> {/* Adjusted prose size */}
+                              <div className="prose prose-base dark:prose-invert max-w-none">
                                 <PortableText value={item.bodyText} />
                               </div>
                             )}
@@ -296,29 +309,38 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                         {section.rightColumnImage && (
                           <Image
                             src={urlFor(section.rightColumnImage).width(600).height(450).auto('format').quality(80).url()}
-                            alt={section.mainHeading || 'Section image'} // Use mainHeading as alt text fallback
+                            alt={section.mainHeading || 'Section image'}
                             width={600}
                             height={450}
-                            className="rounded-lg object-contain shadow-md max-h-[450px]" // Use object-contain and set max-height
+                            className="rounded-lg object-contain shadow-md max-h-[450px]"
                           />
                         )}
                       </div>
                     </div>
                   </div>
-                ) : (
-                   // --- Default Single Column Text Layout ---
-                   <div className="w-full"> {/* Removed px-8, Added w-full */}
+                );
+              } else {
+                 // --- Default Single Column Text Layout ---
+                 sectionContent = (
+                   <div className={`w-full ${wrapperPadding}`}> {/* Apply padding here */}
                      <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
-                     <div className="prose prose-lg dark:prose-invert max-w-none"> {/* Removed px-8 */}
-                       <PortableText value={section.content} /> {/* Keep original single column */}
+                     <div className="prose prose-lg dark:prose-invert max-w-none">
+                       <PortableText value={section.content} />
                      </div>
                   </div>
-                )}
-              </section>
-            ))}
+                 );
+              }
+
+              return (
+                // Apply background/rounding to the outer section tag
+                <section key={section._key} className={sectionWrapperClasses}>
+                  {sectionContent}
+                </section>
+              );
+            })}
           </div>
         )}
-  
+
         {/* Fallback if no sections */}
         {(!caseStudy.sections || caseStudy.sections.length === 0) && (
            <p className="text-neutral-500">Content coming soon...</p>

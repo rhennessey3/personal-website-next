@@ -97,3 +97,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Manually added styles for section backgrounds */
+.bg-rh-black { background-color: #151515; }
+.text-rh-white { color: #FCFCFC; }
+.bg-rh-grey { background-color: #F0F0F0; }
+.text-rh-black { color: #151515; }
+.bg-rh-white { background-color: #FCFCFC; }
+/* text-rh-black is defined above */
