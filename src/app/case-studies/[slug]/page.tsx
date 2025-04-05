@@ -114,6 +114,7 @@ interface CaseStudyPageProps {
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   const { slug } = params;
   const caseStudy = await client.fetch<SanityCaseStudy | null>(CASE_STUDY_QUERY, { slug });
+  console.log("Fetched Case Study Data:", JSON.stringify(caseStudy, null, 2)); // <-- ADD THIS LINE
 
   // Handle case where study is not found
   if (!caseStudy) {
