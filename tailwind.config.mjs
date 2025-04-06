@@ -21,18 +21,20 @@ const config = {
       center: true,
       padding: "2rem",
       screens: {
-        // "navbp": "830px", // Moved to extend.screens
-        "2xl": "1400px", // Keep 2xl here if only for container max-width
+        "2xl": "1400px",
       },
     },
-    screens: { // Define directly under theme.screens
-      'xs': '376px', // Added extra-small breakpoint
-      'md': '768px', // Added standard md breakpoint
-      "navbp": "830px",
-      // Add back sm, lg, xl, 2xl if needed later
+    screens: { // Define custom breakpoints, overriding defaults
+      'xs': '376px',
+      'sm': '640px',  // Standard sm
+      'md': '768px',
+      'navbp': '830px', // Custom nav breakpoint
+      'lg': '1024px', // Standard lg
+      'xl': '1200px', // New breakpoint for slider
+      '2xl': '1400px', // Standard 2xl (matches container setting)
     },
     extend: {
-      // screens object removed from extend
+      // screens object should not be duplicated here if defined under theme.screens directly
       fontFamily: {
         // Link Tailwind's 'sans' utility to your CSS variable
         sans: ["var(--font-geist-sans)", 'system-ui', 'sans-serif'],

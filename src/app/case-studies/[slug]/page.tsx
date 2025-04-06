@@ -1,5 +1,5 @@
 import { client } from "@/sanity/client";
-import { PortableText } from "@portabletext/react";
+import { PortableText, PortableTextReactComponents, PortableTextComponentProps } from "@portabletext/react"; // Import necessary types
 import imageUrlBuilder from '@sanity/image-url';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -112,6 +112,30 @@ interface CaseStudyPageProps {
 
 // Async Server Component to fetch and render the case study
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
+
+  // Define components with correct types
+  // Define components with correct types
+  const portableTextComponents: Partial<PortableTextReactComponents> = {
+    list: {
+      bullet: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 space-y-2">{children}</ul>,
+      number: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 space-y-2">{children}</ol>,
+    },
+    listItem: {
+      bullet: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+      number: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+    },
+    // Add handlers for block styles
+    block: {
+      h1: ({ children }: { children?: React.ReactNode }) => <h1 className="text-4xl font-bold my-4">{children}</h1>,
+      h2: ({ children }: { children?: React.ReactNode }) => <h2 className="text-3xl font-semibold my-3">{children}</h2>,
+      h3: ({ children }: { children?: React.ReactNode }) => <h3 className="text-2xl font-semibold my-2">{children}</h3>,
+      h4: ({ children }: { children?: React.ReactNode }) => <h4 className="text-xl font-semibold my-1">{children}</h4>,
+      normal: ({ children }: { children?: React.ReactNode }) => <p className="mb-2">{children}</p>,
+      blockquote: ({ children }: { children?: React.ReactNode }) => <blockquote className="border-l-4 pl-4 italic my-4">{children}</blockquote>,
+    },
+    // marks: { ... } // Optional marks configuration
+  };
+
   const { slug } = params;
   const caseStudy = await client.fetch<SanityCaseStudy | null>(CASE_STUDY_QUERY, { slug });
 
@@ -200,7 +224,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     <div className={`w-full md:w-1/2 flex-shrink-0`}>
                        <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
                        <div className="prose prose-lg dark:prose-invert max-w-none">
-                         <PortableText value={section.content} />
+                         <PortableText value={section.content} components={portableTextComponents} />
                        </div>
                     </div>
                     {/* Image Column */}
@@ -226,14 +250,14 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                       {/* Left Text Column */}
                       <div className="w-full md:w-1/2 flex-shrink-0">
                          <div className="prose prose-lg dark:prose-invert max-w-none">
-                           <PortableText value={section.content} />
+                           <PortableText value={section.content} components={portableTextComponents} />
                          </div>
                       </div>
                       {/* Right Text Column */}
                       <div className="w-full md:w-1/2 flex-shrink-0">
                          {section.contentRight && (
                            <div className="prose prose-lg dark:prose-invert max-w-none pr-[75px]"> {/* Keep right padding */}
-                             <PortableText value={section.contentRight} />
+                             <PortableText value={section.contentRight} components={portableTextComponents} />
                            </div>
                          )}
                       </div>
@@ -251,7 +275,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     >
                       <CarouselContent className="-ml-4">
                         {section.sliderItems && section.sliderItems.map((item) => (
-                          <CarouselItem key={item._key} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                          <CarouselItem key={item._key} className="xl:basis-1/3 pl-4">
                             <div className="p-1 h-full">
                               <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
                                 {item.image && (
@@ -269,7 +293,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                                   {item.subhead && <h3 className="text-lg font-semibold mb-2">{item.subhead}</h3>}
                                   {item.bodyText && (
                                     <div className="prose prose-sm dark:prose-invert max-w-none text-sm flex-grow">
-                                      <PortableText value={item.bodyText} />
+                                      <PortableText value={item.bodyText} components={portableTextComponents} />
                                     </div>
                                   )}
                                 </div>
@@ -278,8 +302,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                           </CarouselItem>
                         ))}
                       </CarouselContent>
-                      <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" />
-                      <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 hidden md:inline-flex" />
+                      <CarouselPrevious className="absolute left-[-10px] top-1/2 -translate-y-1/2 hidden md:inline-flex z-10" /> {/* Moved outward by 10px */}
+                      <CarouselNext className="absolute right-[-10px] top-1/2 -translate-y-1/2 hidden md:inline-flex z-10" /> {/* Moved outward by 10px */}
                     </Carousel>
                   </div>
                 );
@@ -298,7 +322,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                             {item.subhead && <h3 className="text-xl font-semibold mb-2">{item.subhead}</h3>}
                             {item.bodyText && (
                               <div className="prose prose-base dark:prose-invert max-w-none">
-                                <PortableText value={item.bodyText} />
+                                <PortableText value={item.bodyText} components={portableTextComponents} />
                               </div>
                             )}
                           </div>
@@ -325,7 +349,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                    <div className={`w-full ${wrapperPadding}`}> {/* Apply padding here */}
                      <h2 className="text-3xl font-semibold mb-4">{section.title}</h2>
                      <div className="prose prose-lg dark:prose-invert max-w-none">
-                       <PortableText value={section.content} />
+                       <PortableText value={section.content} components={portableTextComponents} />
                      </div>
                   </div>
                  );
