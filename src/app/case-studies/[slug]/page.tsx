@@ -195,7 +195,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Sections */}
         {caseStudy.sections && caseStudy.sections.length > 0 && (
-          <div> {/* Removed space-y-12 md:space-y-16 */} {/* Increased spacing between sections */}
+          <div className="-mt-8"> {/* Add negative top margin to counteract article's space-y-8 */}
             {caseStudy.sections.map((section, index) => {
               // Define color mapping
               const bgColorMap = {

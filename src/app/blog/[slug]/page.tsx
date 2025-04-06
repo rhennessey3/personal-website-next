@@ -1,5 +1,5 @@
 import { client } from "@/sanity/client";
-import { PortableText } from "@portabletext/react";
+import { PortableText, PortableTextReactComponents } from "@portabletext/react"; // Import necessary types
 import imageUrlBuilder from '@sanity/image-url';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -48,6 +48,29 @@ interface BlogPostPageProps {
 
 // Async Server Component to fetch and render the blog post
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
+
+  // Define components with correct types (copied from case study page)
+  const portableTextComponents: Partial<PortableTextReactComponents> = {
+    list: {
+      bullet: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 space-y-2">{children}</ul>,
+      number: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 space-y-2">{children}</ol>,
+    },
+    listItem: {
+      bullet: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+      number: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+    },
+    // Add handlers for block styles
+    block: {
+      h1: ({ children }: { children?: React.ReactNode }) => <h1 className="text-4xl font-bold my-4">{children}</h1>,
+      h2: ({ children }: { children?: React.ReactNode }) => <h2 className="text-3xl font-semibold my-3">{children}</h2>,
+      h3: ({ children }: { children?: React.ReactNode }) => <h3 className="text-2xl font-semibold my-2">{children}</h3>,
+      h4: ({ children }: { children?: React.ReactNode }) => <h4 className="text-xl font-semibold my-1">{children}</h4>,
+      normal: ({ children }: { children?: React.ReactNode }) => <p className="mb-2">{children}</p>,
+      blockquote: ({ children }: { children?: React.ReactNode }) => <blockquote className="border-l-4 pl-4 italic my-4">{children}</blockquote>,
+    },
+    // marks: { ... } // Optional marks configuration
+  };
+
   const { slug } = params;
   const blogPost = await client.fetch<SanityBlogPost | null>(BLOG_POST_QUERY, { slug });
 
@@ -96,7 +119,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       {blogPost.content && blogPost.content.length > 0 ? (
         <div className="prose prose-lg dark:prose-invert max-w-none">
           {/* Render Portable Text content */}
-          <PortableText value={blogPost.content} />
+          <PortableText value={blogPost.content} components={portableTextComponents} />
         </div>
       ) : (
          <p className="text-neutral-500">Content coming soon...</p>
