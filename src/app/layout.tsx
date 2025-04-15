@@ -11,7 +11,7 @@ const geistMono = GeistMono;
 
 export const metadata: Metadata = {
   title: "Richard Hennessey | Product Management & UX Strategy",
-  description: "Personal website showcasing 10+ years of experience in product management and UX strategy",
+  description: "Rick Hennessey, 10+ years of experience in product management and UX Strategy",
 };
 
 export default function RootLayout({
