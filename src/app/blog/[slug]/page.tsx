@@ -90,7 +90,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Optional: Display summary if it exists */}
         {/* <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-4">{blogPost.summary}</p> */}
         <div className="flex flex-wrap gap-4 items-center text-sm text-neutral-500 dark:text-neutral-400">
-          <span>Published: {new Date(displayDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          {/* Removed Published Date Span */}
           {blogPost.tags && blogPost.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               <span>Tags:</span>

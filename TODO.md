@@ -14,3 +14,18 @@
   - **State:** Decide on state management for modal visibility (Layout, Context, or Sidebar state).
   - **Trigger:** Modify the email icon click handler in the sidebar to open the modal.
   - **Submission:** Determine submission method (API Route, Server Action, Third-Party Service) and implement email sending logic or integration.
+
+- Implement gated content for Case Studies using Clerk and Sanity.
+ - **Goal:** Allow select users (authenticated via Clerk) to view full case studies while keeping the current preview public. Continue using Sanity as the CMS.
+ - **Sanity Strategy (Choose one):**
+   - Option A: Add a new `gatedContent` field (Portable Text or array of section objects) to the `caseStudy` schema.
+   - Option B: Add an `isGated: boolean` flag to the existing `sections` schema array items.
+ - **Clerk Integration:**
+   - Install/configure `@clerk/nextjs`.
+   - Add `<ClerkProvider>` to `src/app/layout.tsx`.
+   - Use `auth()` helper in `src/app/case-studies/[slug]/page.tsx` to get user status.
+ - **Frontend Logic (`src/app/case-studies/[slug]/page.tsx`):**
+   - Fetch both public and gated content data.
+   - Use `auth()` result (`userId`) to conditionally render:
+     - Logged-out: Public preview + Sign-in prompt/button.
+     - Logged-in: Full case study content (based on chosen Sanity strategy).
