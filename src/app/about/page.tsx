@@ -1,26 +1,27 @@
 import { client } from "@/sanity/client";
 import { PortableText, PortableTextReactComponents } from "@portabletext/react";
 import imageUrlBuilder from '@sanity/image-url';
-import Image from 'next/image'; // Import Image for potential use in Portable Text
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
+
+// Force dynamic rendering for every request
+export const dynamic = 'force-dynamic';
 
 // Define the expected structure of the About Page content from Sanity
 interface SanityAboutPage {
   _id: string;
   pageTitle?: string; // Optional title
   contentBody: any[]; // Portable Text content is required
-  // Add other fields if needed in the future
 }
 
 // GROQ query to fetch the single 'aboutPage' document
-// Assumes there's only one document of this type (singleton pattern)
 const ABOUT_PAGE_QUERY = `*[_type == "aboutPage"][0]{
   _id,
   pageTitle,
   contentBody
 }`;
 
-// Configure image URL builder (needed if Portable Text includes images)
+// Configure image URL builder
 const builder = imageUrlBuilder(client);
 function urlFor(source: any) {
   return builder.image(source);
@@ -28,29 +29,24 @@ function urlFor(source: any) {
 
 // Async Server Component to fetch and render the About page content
 export default async function AboutPage() {
+  console.log('[AboutPage] Rendering started.'); // Log start
 
-  // Define components for rendering Portable Text
-  // (Copied from blog page for consistency, adjust styles as needed)
   const portableTextComponents: Partial<PortableTextReactComponents> = {
     types: {
-        // Handler for images within Portable Text
         image: ({ value }) => {
-            if (!value?.asset?._ref) {
-                return null;
-            }
+            if (!value?.asset?._ref) return null;
             return (
-                <div className="relative w-full h-96 my-4"> {/* Adjust styling as needed */}
+                <div className="relative w-full h-96 my-4">
                     <Image
                         src={urlFor(value).width(1200).height(800).fit('max').auto('format').url()}
                         alt={value.alt || 'Image from content'}
                         layout="fill"
-                        objectFit="contain" // Use 'contain' or 'cover' based on preference
+                        objectFit="contain"
                         className="rounded-lg"
                     />
                 </div>
             );
         }
-        // Add other custom type handlers if needed (e.g., code blocks)
     },
     list: {
       bullet: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 space-y-2 my-4">{children}</ul>,
@@ -68,27 +64,34 @@ export default async function AboutPage() {
       normal: ({ children }: { children?: React.ReactNode }) => <p className="mb-4">{children}</p>,
       blockquote: ({ children }: { children?: React.ReactNode }) => <blockquote className="border-l-4 pl-4 italic my-4 text-neutral-600 dark:text-neutral-400">{children}</blockquote>,
     },
-    // marks: { ... } // Optional marks configuration (e.g., links, emphasis)
   };
 
-  // Fetch the about page data
-  const aboutData = await client.fetch<SanityAboutPage | null>(ABOUT_PAGE_QUERY, {}); // Pass empty object for params
+  let aboutData: SanityAboutPage | null = null;
+  try {
+    console.log('[AboutPage] Attempting to fetch data...'); // Log before fetch
+    aboutData = await client.fetch<SanityAboutPage | null>(ABOUT_PAGE_QUERY, {});
+    // Log fetched data (or lack thereof)
+    console.log('[AboutPage] Data fetched:', aboutData ? `Found document ID: ${aboutData._id}` : 'No data returned from query.');
+  } catch (error) {
+    // Log any error during the fetch itself
+    console.error('[AboutPage] Error fetching data from Sanity:', error);
+  }
 
-  // Handle case where data is not found
+  // Handle case where data is not found OR fetch failed
   if (!aboutData) {
+    console.log('[AboutPage] No data found or fetch failed, triggering notFound().'); // Log before notFound
     notFound(); // Triggers Next.js 404 page
   }
 
+  console.log('[AboutPage] Data found, rendering content.'); // Log before render
+
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 space-y-6"> {/* Added container styling */}
-      {/* Display Page Title if it exists */}
+    <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
       {aboutData.pageTitle && (
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 border-b pb-4">
           {aboutData.pageTitle}
         </h1>
       )}
-
-      {/* Render Portable Text content */}
       {aboutData.contentBody && aboutData.contentBody.length > 0 ? (
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <PortableText value={aboutData.contentBody} components={portableTextComponents} />
