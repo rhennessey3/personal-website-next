@@ -12,14 +12,20 @@ import {
 } from "@/components/ui/carousel"; // Added Carousel imports
 import { ContactForm } from '@/components/contact-form'; // Import the contact form (named import)
 
-// Define the expected structure of a Case Study from Sanity
+// Define a reusable Image Asset type
+interface SanityImageAsset {
+  _ref: string;
+  url: string;
+  mimeType: string;
+}
+
 interface SanityCaseStudy {
   _id: string;
   title: string;
   slug: { current: string };
   summary: string; // Will be replaced by subtitle in display logic
   subtitle?: string; // New field for subtitle
-  featuredImage?: { asset: { _ref: string } }; // Assuming image field structure
+  featuredImage?: { asset: SanityImageAsset }; // Use the new type
   publishedDate?: string;
   _createdAt: string;
   tags?: { name: string }[]; // Assuming tags are references
@@ -28,14 +34,14 @@ interface SanityCaseStudy {
     title: string;
     sectionType: string; // May not be needed if layout handles visual distinction
     content?: any[]; // Portable Text content (optional for some layouts)
-    image?: { asset: { _ref: string } }; // Optional section image
+    image?: { asset: SanityImageAsset }; // Use the new type
     layout?: 'textLeft' | 'imageLeft' | 'twoColumnText' | 'threeColumnSlider' | 'twoColumnTextRowsImageRight'; // Added new layout
     // Fields for 'twoColumnText'
     contentRight?: any[];
     // Fields for 'threeColumnSlider'
     sliderItems?: {
       _key: string;
-      image?: { asset: { _ref: string } };
+      image?: { asset: SanityImageAsset }; // Use the new type
       subhead?: string;
       bodyText?: any[];
     }[];
@@ -46,7 +52,7 @@ interface SanityCaseStudy {
       subhead?: string;
       bodyText?: any[];
     }[];
-    rightColumnImage?: { asset: { _ref: string } };
+    rightColumnImage?: { asset: SanityImageAsset }; // Use the new type
     backgroundColor?: 'rh-black' | 'rh-grey' | 'rh-white'; // Added background color field
   }[];
   metrics?: { // Assuming metrics are objects within an array
@@ -64,7 +70,7 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
   slug,
   summary, // Keep fetching for now, but won't be displayed in header
   subtitle, // Fetch new field
-  featuredImage,
+  featuredImage{asset->{_ref, url, mimeType}}, // Fetch URL and mimeType
   publishedDate,
   _createdAt,
   "tags": tags[]->{name}, // Fetch referenced tag names
@@ -73,14 +79,14 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
     title, // Keep title for potential fallback or other uses
     sectionType,
     content,
-    image,
+    image{asset->{_ref, url, mimeType}}, // Fetch URL and mimeType
     layout,
     // twoColumnText fields
     contentRight,
     // threeColumnSlider fields
     sliderItems[]{
       _key,
-      image,
+      image{asset->{_ref, url, mimeType}}, // Fetch URL and mimeType
       subhead,
       bodyText
     },
@@ -91,7 +97,7 @@ const CASE_STUDY_QUERY = `*[_type == "caseStudy" && slug.current == $slug][0]{
       subhead,
       bodyText
     },
-    rightColumnImage,
+    rightColumnImage{asset->{_ref, url, mimeType}}, // Fetch URL and mimeType
     backgroundColor // Fetch background color
   },
   metrics[]{_key, label, value}
@@ -107,7 +113,7 @@ function urlFor(source: any) {
 interface CaseStudyPageProps {
   params: {
     slug: string;
-  };
+    };
 }
 
 // Async Server Component to fetch and render the case study
@@ -157,8 +163,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <Image
             src={urlFor(caseStudy.featuredImage).width(1600).height(900).url()} // Reverted dimensions
             alt={caseStudy.title || 'Featured image'}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             priority
             className="z-0" // Ensure image is behind the overlay
           />
@@ -216,7 +222,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                 // Two-column layout (Image + Text)
                 sectionContent = (
                   <div // Image + Text Container
-                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-center ${wrapperPadding} ${ // Apply padding here
+                    className={`flex flex-col md:flex-row gap-8 lg:gap-12 items-start ${wrapperPadding} ${ // Apply padding here, changed items-center to items-start
                       (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'md:flex-row-reverse' : ''
                     }`}
                   >
@@ -228,16 +234,35 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                        </div>
                     </div>
                     {/* Image Column */}
-                    <div className={`w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 flex justify-center ${
+                    <div className={`w-full md:w-1/2 mt-4 md:mt-0 flex-shrink-0 flex ${ // Removed justify-center
                       (section.layout === 'imageLeft' || (!section.layout && index % 2 !== 0)) ? 'pl-[45px]' : '' // Keep conditional padding for image alignment
                     }`}>
-                      <Image
-                        src={urlFor(section.image).width(800).height(600).auto('format').quality(80).url()}
-                        alt={section.title || 'Section image'}
-                        width={800}
-                        height={600}
-                        className="mx-auto rounded-lg object-cover shadow-md aspect-[4/3]"
-                      />
+                      {(() => {
+                        if (section.image.asset.mimeType === 'image/svg+xml') {
+                          return (
+                            <img
+                              src={section.image.asset.url}
+                              alt={section.title || 'Section image'}
+                              width={800} // Keep width/height for layout
+                              height={600}
+                              style={{ objectFit: 'contain' }} // Style directly for SVG
+                              className="rounded-lg shadow-md max-w-full h-auto" // Ensure responsiveness
+                            />
+                          );
+                        } else {
+                          return (
+                            <Image
+                              src={urlFor(section.image).auto('format').dpr(2).url()}
+                              alt={section.title || 'Section image'}
+                              width={800}
+                              height={600}
+                              style={{ objectFit: 'contain' }} // Ensure image fits within bounds
+                              className="rounded-lg shadow-md"
+                              quality={100}
+                            />
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
                 );
@@ -278,17 +303,29 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                           <CarouselItem key={item._key} className="xl:basis-1/3 pl-4">
                             <div className="p-1 h-full">
                               <div className="flex flex-col h-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-                                {item.image && (
-                                  <div className="relative w-full aspect-video">
-                                    <Image
-                                      src={urlFor(item.image).width(400).height(225).auto('format').quality(75).url()}
-                                      alt={item.subhead || 'Slider image'}
-                                      layout="fill"
-                                      objectFit="cover"
-                                      className="rounded-t-lg"
-                                    />
-                                  </div>
-                                )}
+                                {item.image && (() => {
+                                  if (item.image.asset.mimeType === 'image/svg+xml') {
+                                    return (
+                                      <img
+                                        src={item.image.asset.url}
+                                        alt={item.subhead || 'Slider image'}
+                                        style={{ objectFit: 'contain' }}
+                                        className="absolute inset-0 w-full h-full rounded-t-lg" // Fill container for SVG
+                                      />
+                                    );
+                                  } else {
+                                    return (
+                                      <Image
+                                        src={urlFor(item.image).auto('format').dpr(2).url()}
+                                        alt={item.subhead || 'Slider image'}
+                                        fill
+                                        style={{ objectFit: 'contain' }}
+                                        className="rounded-t-lg"
+                                        quality={100}
+                                      />
+                                    );
+                                  }
+                                })()}
                                 <div className="p-4 flex flex-col flex-grow">
                                   {item.subhead && <h3 className="text-lg font-semibold mb-2">{item.subhead}</h3>}
                                   {item.bodyText && (
@@ -330,15 +367,32 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                       </div>
                       {/* Right Column (Image) */}
                       <div className="w-full md:w-1/2 flex-shrink-0 flex justify-center items-center mt-6 md:mt-0">
-                        {section.rightColumnImage && (
-                          <Image
-                            src={urlFor(section.rightColumnImage).width(600).height(450).auto('format').quality(80).url()}
-                            alt={section.mainHeading || 'Section image'}
-                            width={600}
-                            height={450}
-                            className="rounded-lg object-contain shadow-md max-h-[450px]"
-                          />
-                        )}
+                        {section.rightColumnImage && (() => {
+                          if (section.rightColumnImage.asset.mimeType === 'image/svg+xml') {
+                            return (
+                              <img
+                                src={section.rightColumnImage.asset.url}
+                                alt={section.mainHeading || 'Section image'}
+                                width={600} // Keep width/height for layout
+                                height={450}
+                                style={{ objectFit: 'contain' }} // Style directly for SVG
+                                className="w-full rounded-lg shadow-md max-h-[450px] h-auto" // Ensure responsiveness
+                              />
+                            );
+                          } else {
+                            return (
+                              <Image
+                                src={urlFor(section.rightColumnImage).auto('format').dpr(2).url()}
+                                alt={section.mainHeading || 'Section image'}
+                                width={600}
+                                height={450}
+                                style={{ objectFit: 'contain' }}
+                                className="w-full rounded-lg shadow-md max-h-[450px]"
+                                quality={100}
+                              />
+                            );
+                          }
+                        })()}
                       </div>
                     </div>
                   </div>
