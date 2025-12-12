@@ -105,3 +105,16 @@
 .text-rh-black { color: #151515; }
 .bg-rh-white { background-color: #FCFCFC; }
 /* text-rh-black is defined above */
+
+/* Ensure prose content wraps properly */
+.prose {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.prose * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
